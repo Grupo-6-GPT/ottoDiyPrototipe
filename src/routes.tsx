@@ -9,8 +9,8 @@ import { Toaster } from 'sonner';
 function Layout() {
   return (
     <div
-      className="max-w-md mx-auto min-h-screen relative"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#0B0B14', color: '#E8E8F0' }}
+      className="max-w-md mx-auto min-h-screen relative pb-[6rem]"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif", background: '#0B0B14', color: '#E8E8F0', paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))' }}
     >
       <Toaster
         theme="dark"

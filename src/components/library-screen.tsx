@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Play, Pencil, Trash2, Plus, Layers, Clock, Hash, Repeat, X, Download } from 'lucide-react';
-import { useSavedChoreographies, useSteps, type Choreography } from '../store';
+import { useSavedChoreographies, useSteps, type Choreography, useUI } from '../store';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -124,6 +124,12 @@ export function LibraryScreen() {
   const [search, setSearch] = useState('');
   const [selectedChoreo, setSelectedChoreo] = useState<Choreography | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Choreography | null>(null);
+
+  const { setOverlayOpen } = useUI();
+  useEffect(() => {
+    setOverlayOpen(!!selectedChoreo || !!deleteTarget);
+    return () => setOverlayOpen(false);
+  }, [selectedChoreo, deleteTarget, setOverlayOpen]);
 
   const filtered = choreos
     .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))

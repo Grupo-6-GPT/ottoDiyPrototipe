@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router';
 import { Bluetooth, Layers, Play, FolderOpen } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useUI } from '../store';
 
 const tabs = [
   { path: '/', label: 'Connect', icon: Bluetooth },
@@ -12,6 +13,9 @@ const tabs = [
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { overlayOpen } = useUI();
+
+  if (overlayOpen) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]" style={{ background: '#0B0B14' }}>

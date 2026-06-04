@@ -4,11 +4,15 @@ import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "./utils";
+import { useUI } from '../../store';
 
-function Drawer({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+function Drawer({ children, onOpenChange, ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  const { setOverlayOpen } = useUI();
+  const handleOpenChange = (open: boolean) => {
+    setOverlayOpen(!!open);
+    if (typeof onOpenChange === 'function') onOpenChange(open);
+  };
+  return <DrawerPrimitive.Root data-slot="drawer" {...props} onOpenChange={handleOpenChange}>{children}</DrawerPrimitive.Root>;
 }
 
 function DrawerTrigger({

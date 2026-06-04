@@ -5,9 +5,19 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
+import { useUI } from '../../store';
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+function Sheet({ children, onOpenChange, ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
+  const { setOverlayOpen } = useUI();
+  const handleOpenChange = (open: boolean) => {
+    setOverlayOpen(!!open);
+    if (typeof onOpenChange === 'function') onOpenChange(open);
+  };
+  return (
+    <SheetPrimitive.Root data-slot="sheet" onOpenChange={handleOpenChange} {...props}>
+      {children}
+    </SheetPrimitive.Root>
+  );
 }
 
 function SheetTrigger({

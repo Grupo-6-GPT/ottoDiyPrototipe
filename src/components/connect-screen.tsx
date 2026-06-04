@@ -3,15 +3,25 @@ import { Bluetooth, BluetoothOff, Battery, Signal, Cpu, Settings, ChevronRight }
 import { OttoRobot } from './otto-robot';
 import { useConnection } from '../store';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function ConnectScreen() {
-  const { connected, battery, connect, disconnect } = useConnection();
+  const { connected, battery, deviceName, connect, disconnect, transportMode } = useConnection();
   const [connecting, setConnecting] = useState(false);
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (navigator.vibrate) navigator.vibrate(15);
     setConnecting(true);
-    setTimeout(() => { connect(); setConnecting(false); }, 1500);
+
+    try {
+      const connection = await connect();
+      toast.success(connection.mode === 'serial' ? 'Robot conectado por USB' : 'Robot conectado por Bluetooth');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'No se pudo conectar al robot';
+      toast.error(message);
+    } finally {
+      setConnecting(false);
+    }
   };
 
   return (
@@ -114,8 +124,8 @@ export function ConnectScreen() {
                   <Cpu size={16} style={{ color: '#818CF8' }} />
                 </div>
                 <div className="flex-1">
-                  <p style={{ color: '#D0D0E0', fontSize: 13, fontWeight: 700 }}>Otto-BT-001</p>
-                  <p style={{ color: '#4A4A6A', fontSize: 11 }}>Arduino Nano · BLE 4.0</p>
+                  <p style={{ color: '#D0D0E0', fontSize: 13, fontWeight: 700 }}>{deviceName || 'Otto-BT-001'}</p>
+                  <p style={{ color: '#4A4A6A', fontSize: 11 }}>{transportMode === 'serial' ? 'ESP32 · USB Serial' : 'ESP32 · BLE UART'}</p>
                 </div>
                 <ChevronRight size={14} style={{ color: '#3A3A5A' }} />
               </div>

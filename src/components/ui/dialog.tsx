@@ -5,11 +5,15 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
+import { useUI } from '../../store';
 
-function Dialog({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+function Dialog({ children, onOpenChange, ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  const { setOverlayOpen } = useUI();
+  const handleOpenChange = (open: boolean) => {
+    setOverlayOpen(!!open);
+    if (typeof onOpenChange === 'function') onOpenChange(open);
+  };
+  return <DialogPrimitive.Root data-slot="dialog" onOpenChange={handleOpenChange} {...props}>{children}</DialogPrimitive.Root>;
 }
 
 function DialogTrigger({
