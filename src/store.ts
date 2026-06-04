@@ -5,6 +5,7 @@ import {
   getOttoTransportMode,
   sendOttoRobotCommand,
   sendOttoSequence,
+  getCommandDuration,
 } from './lib/ottoBluetooth';
 
 export interface Step {
@@ -21,6 +22,9 @@ export interface Step {
   servoAngle?: number;
   soundFreq?: number;
   pauseAfter?: number;
+  // Grouping support: a step may be a group containing child steps.
+  isGroup?: boolean;
+  children?: Step[];
 }
 
 export interface Choreography {
@@ -30,6 +34,9 @@ export interface Choreography {
   createdAt: number;
   bpm: number;
   loop: boolean;
+  youtubeUrl?: string;
+  audioUrl?: string; // Direct audio URL or extracted from YouTube
+  youtubeDuration?: number; // seconds
 }
 
 /**
@@ -135,30 +142,61 @@ export function getArduinoDuration(command: string): number {
 }
 
 export function getStepEstimatedDuration(step: Step): number {
+  if (step.isGroup && step.children) {
+    const childrenDuration = step.children.reduce((sum, child) => sum + getStepEstimatedDuration(child), 0);
+    return Math.round(childrenDuration * Math.max(1, step.repetitions));
+  }
+
+  // Build the command string the robot will actually receive. For
+  // parameterized moves (e.g. WALK_F:duration) we include the chosen
+  // visual `step.duration`. For non-parameterized moves we send the
+  // bare command. Then ask the low-level helper for the real Arduino
+  // execution time for that command string.
   if (step.command === 'PAUSE') {
-    return Math.max(step.duration, step.pauseAfter || 0, getArduinoDuration(step.command));
+    const cmd = `PAUSE:${Math.max(step.duration, 0)}`;
+    const dur = getCommandDuration(cmd);
+    const pauseDuration = step.pauseAfter || 0;
+    return Math.round((dur + pauseDuration) * step.repetitions);
   }
 
-  const base = getArduinoDuration(step.command);
-  const speedMult = step.speed === 'fast' ? 0.6 : step.speed === 'slow' ? 1.6 : 1.0;
-  let commandDuration = base * speedMult;
-
-  if (step.command === 'WALK_F' || step.command === 'WALK_B') {
-    const delayArg = Math.max(step.duration, 80);
-    commandDuration = delayArg * 4 + 400;
-  } else if (step.command === 'TURN_L' || step.command === 'TURN_R') {
-    const delayArg = Math.max(step.duration, 80);
-    commandDuration = delayArg * 2 + 400;
-  } else if (step.command === 'MOONWALK') {
-    const delayArg = Math.max(step.duration, 80);
-    commandDuration = delayArg * 8 + 400;
-  } else if (step.command === 'SPIN') {
-    const delayArg = Math.max(step.duration, 80);
-    commandDuration = delayArg * 8 + 400;
-  }
-
+  const cmdBase = step.parameterized ? `${step.command}:${Math.max(step.duration, 0)}` : step.command;
+  const cmdDur = getCommandDuration(cmdBase);
   const pauseDuration = step.pauseAfter || 0;
-  return Math.round((commandDuration + pauseDuration) * step.repetitions);
+  return Math.round((cmdDur + pauseDuration) * step.repetitions);
+}
+
+/**
+ * Expand steps into a flat command list that mirrors what we will send
+ * to the robot. Each item includes the actual command string and the
+ * estimated real duration in ms (as reported by getCommandDuration).
+ */
+export function expandStepsToCommands(steps: Step[]) {
+  const out: { cmd: string; durationMs: number }[] = [];
+
+  function flatten(step: Step) {
+    if (step.isGroup && step.children && step.children.length > 0) {
+      // Repeat the whole group's children `repetitions` times.
+      const groupReps = Math.max(1, step.repetitions);
+      for (let g = 0; g < groupReps; g++) {
+        for (const child of step.children) flatten(child);
+      }
+      return;
+    }
+
+    // Normal step (not a group)
+    const reps = Math.max(1, step.repetitions);
+    for (let r = 0; r < reps; r++) {
+      const mainCmd = step.parameterized ? `${step.command}:${Math.max(step.duration, 0)}` : step.command;
+      out.push({ cmd: mainCmd, durationMs: getCommandDuration(mainCmd) });
+      if (step.pauseAfter && step.pauseAfter > 0) {
+        const pauseCmd = `PAUSE:${step.pauseAfter}`;
+        out.push({ cmd: pauseCmd, durationMs: getCommandDuration(pauseCmd) });
+      }
+    }
+  }
+
+  for (const step of steps) flatten(step);
+  return out;
 }
 
 export const CATEGORIES = [
@@ -185,6 +223,7 @@ function createStore<T>(initial: T) {
 }
 
 const stepsStore = createStore<Step[]>([]);
+const choreographyMetaStore = createStore<{ youtubeUrl?: string; audioUrl?: string; youtubeDuration?: number }>({});
 const connectionStore = createStore<{
   connected: boolean;
   battery: number;
@@ -202,6 +241,7 @@ export function useUI() {
 
 export function useSteps() {
   const steps = useSyncExternalStore(stepsStore.subscribe, stepsStore.get);
+  const meta = useSyncExternalStore(choreographyMetaStore.subscribe, choreographyMetaStore.get);
 
   const addStep = useCallback((move: typeof AVAILABLE_MOVES[number], duration: number, extra?: Partial<Step>) => {
     const newStep: Step = {
@@ -211,8 +251,8 @@ export function useSteps() {
       command: move.command,
       color: move.color,
       bodyPart: move.bodyPart,
-      duration: move.parameterized ? duration : move.arduinoDuration,
-      parameterized: move.parameterized,
+      duration: 'parameterized' in move && move.parameterized ? duration : move.arduinoDuration,
+      parameterized: 'parameterized' in move ? move.parameterized : false,
       speed: 'normal',
       repetitions: 1,
       pauseAfter: 0,
@@ -222,11 +262,40 @@ export function useSteps() {
     return newStep;
   }, []);
 
-  const removeStep    = useCallback((id: string) => stepsStore.set(prev => prev.filter(s => s.id !== id)), []);
-  const updateStep    = useCallback((id: string, updates: Partial<Step>) => stepsStore.set(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s)), []);
-  const clearAll      = useCallback(() => stepsStore.set([]), []);
+  const removeStep    = useCallback((id: string) => {
+    stepsStore.set(prev => {
+      // Remove matching top-level
+      if (prev.some(s => s.id === id)) return prev.filter(s => s.id !== id);
+      // Otherwise remove from any group's children
+      const out = prev.map(s => {
+        if (s.isGroup && s.children) {
+          const kids = s.children.filter(c => c.id !== id);
+          return { ...s, children: kids };
+        }
+        return s;
+      });
+      return out;
+    });
+  }, []);
+
+  const updateStep    = useCallback((id: string, updates: Partial<Step>) => {
+    stepsStore.set(prev => {
+      function updateInArray(arr: Step[]): Step[] {
+        return arr.map(s => {
+          if (s.id === id) return { ...s, ...updates };
+          if (s.isGroup && s.children) return { ...s, children: updateInArray(s.children) };
+          return s;
+        });
+      }
+      return updateInArray(prev);
+    });
+  }, []);
+  const clearAll      = useCallback(() => { stepsStore.set([]); choreographyMetaStore.set({}); }, []);
   const undo          = useCallback(() => stepsStore.set(prev => prev.slice(0, -1)), []);
-  const loadSteps     = useCallback((s: Step[]) => stepsStore.set([...s]), []);
+  const loadSteps     = useCallback((s: Step[], meta?: { youtubeUrl?: string; audioUrl?: string; youtubeDuration?: number }) => { 
+    stepsStore.set([...s]); 
+    choreographyMetaStore.set(meta || {}); 
+  }, []);
   const reorder       = useCallback((fromIdx: number, toIdx: number) => {
     stepsStore.set(prev => {
       const arr = [...prev];
@@ -237,16 +306,170 @@ export function useSteps() {
   }, []);
   const duplicateStep = useCallback((id: string) => {
     stepsStore.set(prev => {
+      // top-level duplicate
       const idx = prev.findIndex(s => s.id === id);
-      if (idx === -1) return prev;
-      const copy = { ...prev[idx], id: Date.now().toString() + Math.random().toString(36).slice(2) };
-      const arr = [...prev];
-      arr.splice(idx + 1, 0, copy);
+      if (idx !== -1) {
+        const copy = { ...prev[idx], id: Date.now().toString() + Math.random().toString(36).slice(2) };
+        const arr = [...prev];
+        arr.splice(idx + 1, 0, copy);
+        return arr;
+      }
+
+      // nested duplicate inside a group
+      const arr = prev.map(s => {
+        if (s.isGroup && s.children) {
+          const cIdx = s.children.findIndex(c => c.id === id);
+          if (cIdx !== -1) {
+            const copyChild = { ...s.children[cIdx], id: Date.now().toString() + Math.random().toString(36).slice(2) };
+            const newChildren = [...s.children];
+            newChildren.splice(cIdx + 1, 0, copyChild);
+            return { ...s, children: newChildren };
+          }
+        }
+        return s;
+      });
       return arr;
     });
   }, []);
 
-  return { steps, addStep, removeStep, updateStep, clearAll, undo, loadSteps, reorder, duplicateStep };
+  const createGroup = useCallback((stepIds: string[], name?: string, reps: number = 1) => {
+    if (!stepIds || stepIds.length === 0) return;
+    stepsStore.set(prev => {
+      const idxs = stepIds.map(id => prev.findIndex(s => s.id === id)).filter(i => i !== -1).sort((a, b) => a - b);
+      if (idxs.length === 0) return prev;
+      const arr = [...prev];
+      const firstIdx = idxs[0];
+      // Extract children preserving order
+      const children: Step[] = idxs.map(i => ({ ...prev[i] }));
+      // Remove items from arr starting from the highest index
+      for (let i = idxs.length - 1; i >= 0; i--) arr.splice(idxs[i], 1);
+
+      const groupStep: Step = {
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        name: name ?? 'Group',
+        icon: '📦',
+        command: 'GROUP',
+        color: '#9CA3AF',
+        bodyPart: 'group',
+        duration: Math.max(0, children.reduce((s, c) => s + getStepEstimatedDuration(c), 0)),
+        parameterized: false,
+        speed: 'normal',
+        repetitions: Math.max(1, Math.floor(reps)),
+        pauseAfter: 0,
+        isGroup: true,
+        children,
+      };
+      arr.splice(firstIdx, 0, groupStep);
+      return arr;
+    });
+  }, []);
+
+  const ungroup = useCallback((groupId: string) => {
+    stepsStore.set(prev => {
+      const idx = prev.findIndex(s => s.id === groupId);
+      if (idx === -1) return prev;
+      const group = prev[idx];
+      if (!group.isGroup || !group.children) return prev;
+      const arr = [...prev];
+      arr.splice(idx, 1, ...group.children.map(c => ({ ...c })));
+      return arr;
+    });
+  }, []);
+
+  const duplicateGroup = useCallback((groupId: string) => {
+    stepsStore.set(prev => {
+      const idx = prev.findIndex(s => s.id === groupId);
+      if (idx === -1) return prev;
+      const group = prev[idx];
+      if (!group.isGroup || !group.children) return prev;
+      const copyChildren = group.children.map(c => ({ ...c, id: Date.now().toString() + Math.random().toString(36).slice(2) }));
+      const copyGroup: Step = { ...group, id: Date.now().toString() + Math.random().toString(36).slice(2), children: copyChildren };
+      const arr = [...prev];
+      arr.splice(idx + 1, 0, copyGroup);
+      return arr;
+    });
+  }, []);
+
+  const setGroupRepetitions = useCallback((groupId: string, reps: number) => {
+    stepsStore.set(prev => prev.map(s => s.id === groupId && s.isGroup ? { ...s, repetitions: Math.max(1, Math.floor(reps)) } : s));
+  }, []);
+
+  const moveGroup = useCallback((groupId: string, toIdx: number) => {
+    stepsStore.set(prev => {
+      const idx = prev.findIndex(s => s.id === groupId);
+      if (idx === -1) return prev;
+      const arr = [...prev];
+      const [item] = arr.splice(idx, 1);
+      arr.splice(Math.max(0, Math.min(toIdx, arr.length)), 0, item);
+      return arr;
+    });
+  }, []);
+
+  const duplicateStepAt = useCallback((stepId: string, insertBeforeIndex: number) => {
+    stepsStore.set(prev => {
+      const step = prev.find(s => s.id === stepId);
+      if (!step) return prev;
+      const clone: Step = {
+        ...step,
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        ...(step.isGroup && step.children ? {
+          children: step.children.map(c => ({ ...c, id: Date.now().toString() + Math.random().toString(36).slice(2) }))
+        } : {}),
+      };
+      const arr = [...prev];
+      arr.splice(Math.max(0, Math.min(insertBeforeIndex, arr.length)), 0, clone);
+      return arr;
+    });
+  }, []);
+
+  const createGroupAt = useCallback((stepIds: string[], insertBeforeIndex: number, name?: string, reps: number = 1) => {
+    if (!stepIds || stepIds.length === 0) return;
+    stepsStore.set(prev => {
+      const idxs = stepIds.map(id => prev.findIndex(s => s.id === id)).filter(i => i !== -1).sort((a, b) => a - b);
+      if (idxs.length === 0) return prev;
+      const arr = [...prev];
+      // Extract children preserving order
+      const children: Step[] = idxs.map(i => prev[i]).filter(s => s);
+      // Remove items from arr starting from the highest index
+      for (let i = idxs.length - 1; i >= 0; i--) arr.splice(idxs[i], 1);
+
+      const groupStep: Step = {
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        name: name ?? 'Group',
+        icon: '📦',
+        command: 'GROUP',
+        color: '#9CA3AF',
+        bodyPart: 'group',
+        duration: Math.max(0, children.reduce((s, c) => s + getStepEstimatedDuration(c), 0)),
+        parameterized: false,
+        speed: 'normal',
+        repetitions: Math.max(1, Math.floor(reps)),
+        pauseAfter: 0,
+        isGroup: true,
+        children,
+      };
+      // Adjust insertion index if necessary (items were removed before it)
+      const removedBefore = idxs.filter(i => i < insertBeforeIndex).length;
+      const adjustedIdx = Math.max(0, Math.min(insertBeforeIndex - removedBefore, arr.length));
+      arr.splice(adjustedIdx, 0, groupStep);
+      return arr;
+    });
+  }, []);
+
+  const duplicateGroupAt = useCallback((groupId: string, insertBeforeIndex: number) => {
+    stepsStore.set(prev => {
+      const group = prev.find(s => s.id === groupId);
+      if (!group || !group.isGroup || !group.children) return prev;
+      const copyChildren = group.children.map(c => ({ ...c, id: Date.now().toString() + Math.random().toString(36).slice(2) }));
+      const copyGroup: Step = { ...group, id: Date.now().toString() + Math.random().toString(36).slice(2), children: copyChildren };
+      const arr = [...prev];
+      arr.splice(Math.max(0, Math.min(insertBeforeIndex, arr.length)), 0, copyGroup);
+      return arr;
+    });
+  }, []);
+
+  return { steps, meta, addStep, removeStep, updateStep, clearAll, undo, loadSteps, reorder, duplicateStep,
+    duplicateStepAt, createGroup, createGroupAt, ungroup, duplicateGroup, duplicateGroupAt, setGroupRepetitions, moveGroup };
 }
 
 export function useConnection() {
@@ -264,7 +487,8 @@ export function useConnection() {
   }, []);
 
   const sendCommand   = useCallback((command: string) => sendOttoRobotCommand(command), []);
-  const sendSequence  = useCallback((commands: string[]) => sendOttoSequence(commands), []);
+  const sendSequence  = useCallback((commands: string[], onProgress?: (index: number, total: number) => void, signal?: AbortSignal) =>
+    sendOttoSequence(commands, onProgress, signal), []);
 
   return {
     ...state,
@@ -283,8 +507,18 @@ export function useSavedChoreographies() {
 
   const persist = (data: Choreography[]) => localStorage.setItem('ottodance_choreos', JSON.stringify(data));
 
-  const save = useCallback((name: string, steps: Step[], opts?: { bpm?: number; loop?: boolean }) => {
-    const c: Choreography = { id: Date.now().toString(), name, steps, createdAt: Date.now(), bpm: opts?.bpm ?? 120, loop: opts?.loop ?? false };
+  const save = useCallback((name: string, steps: Step[], opts?: { bpm?: number; loop?: boolean; youtubeUrl?: string; audioUrl?: string; youtubeDuration?: number }) => {
+    const c: Choreography = { 
+      id: Date.now().toString(), 
+      name, 
+      steps, 
+      createdAt: Date.now(), 
+      bpm: opts?.bpm ?? 120, 
+      loop: opts?.loop ?? false,
+      youtubeUrl: opts?.youtubeUrl,
+      audioUrl: opts?.audioUrl,
+      youtubeDuration: opts?.youtubeDuration,
+    };
     setChoreos(prev => { const u = [...prev, c]; persist(u); return u; });
     return c;
   }, []);

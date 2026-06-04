@@ -135,7 +135,7 @@ export function LibraryScreen() {
     .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => b.createdAt - a.createdAt);
 
-  const handlePlay = (c: Choreography) => { loadSteps(c.steps); navigate('/play'); };
+  const handlePlay = (c: Choreography) => { loadSteps(c.steps, { youtubeUrl: c.youtubeUrl, audioUrl: c.audioUrl, youtubeDuration: c.youtubeDuration }); navigate('/play'); };
   const handleEdit = (c: Choreography) => { loadSteps(c.steps); navigate('/choreography'); };
   const handleExport = (c: Choreography) => {
     const data = JSON.stringify({
