@@ -352,7 +352,7 @@ export function OttoRobot({
         {/* Interactive hints */}
         {interactive && hovered && (
           <g>
-            <rect x="30" y="218" width="140" height="18" rx="4" fill="#141422" opacity="0.9" />
+            <rect x="10" y="218" width="180" height="18" rx="4" fill="#141422" opacity="0.9" />
             <text
               x="100" y="230"
               textAnchor="middle"
@@ -361,7 +361,7 @@ export function OttoRobot({
               fontWeight="600"
               fontFamily="Inter, sans-serif"
             >
-              Tap: add {hovered} move
+              {typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches ? 'Toca' : 'Click'}: agregar movimiento de {hovered === 'head' ? 'cabeza' : hovered === 'body' ? 'cuerpo' : 'piernas'}
             </text>
           </g>
         )}

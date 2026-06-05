@@ -25,14 +25,14 @@ export function ConnectScreen() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen overflow-y-auto px-5 pb-24 pt-8" style={{ WebkitOverflowScrolling: 'touch' as any }}>
+    <div className="flex flex-col items-center min-h-dvh overflow-y-auto px-5 pb-24 pt-8 md:justify-center md:py-12" style={{ WebkitOverflowScrolling: 'touch' as any }}>
       {/* Robot */}
       <motion.div
         initial={{ y: -15, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
       >
-        <OttoRobot size={140} dancing={connected} />
+        <OttoRobot size={160} dancing={connected} />
       </motion.div>
 
       {/* Title */}
@@ -112,7 +112,7 @@ export function ConnectScreen() {
       <AnimatePresence>
         {connected && (
           <motion.div
-            className="mt-5 w-full max-w-xs flex flex-col gap-2"
+            className="mt-5 w-full max-w-xs md:max-w-sm flex flex-col gap-2"
             initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 12, opacity: 0 }}
