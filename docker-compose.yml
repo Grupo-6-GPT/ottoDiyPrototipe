@@ -1,4 +1,54 @@
 services:
+
+  # ── MySQL ────────────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: otto-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ottodance
+      MYSQL_USER: otto
+      MYSQL_PASSWORD: otto
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/otto.cnf:ro
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "otto", "-potto"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+
+  # ── Backend ──────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+    container_name: otto-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST:     mysql
+      DB_PORT:     3306
+      DB_USER:     otto
+      DB_PASSWORD: otto
+      DB_NAME:     ottodance
+      PORT:        3000
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ── Frontend (nginx) ─────────────────────────────────────────────────────
   ottobot:
     build:
       context: .
@@ -7,12 +57,20 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
-    # OttoBot uses the Web Bluetooth API, which requires a secure context (HTTPS).
-    # For local development, localhost is considered secure by browsers.
-    # For production, put a reverse proxy with TLS in front of this container.
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    # OttoBot uses Web Bluetooth API — requires a secure context (HTTPS).
+    # For local dev, localhost is considered secure. For production add TLS.
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:80"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  mysql_data:

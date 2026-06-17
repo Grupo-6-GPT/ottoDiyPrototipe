@@ -1,4 +1,5 @@
-import { useState, useCallback, useSyncExternalStore } from 'react';
+import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
+import { toast } from 'sonner';
 import {
   connectOttoRobot,
   disconnectOttoRobot,
@@ -500,35 +501,61 @@ export function useConnection() {
   };
 }
 
-export function useSavedChoreographies() {
-  const [choreos, setChoreos] = useState<Choreography[]>(() => {
-    try { return JSON.parse(localStorage.getItem('ottodance_choreos') || '[]'); } catch { return []; }
-  });
+const API = '/api/choreographies';
 
-  const persist = (data: Choreography[]) => localStorage.setItem('ottodance_choreos', JSON.stringify(data));
+export function useSavedChoreographies() {
+  const [choreos, setChoreos] = useState<Choreography[]>([]);
+
+  useEffect(() => {
+    fetch(API)
+      .then(r => r.json())
+      .then((data: unknown) => {
+        if (Array.isArray(data)) setChoreos(data as Choreography[]);
+        else toast.error('No se pudo cargar las coreografías');
+      })
+      .catch(() => toast.error('No se pudo conectar con el servidor'));
+  }, []);
 
   const save = useCallback((name: string, steps: Step[], opts?: { bpm?: number; loop?: boolean; youtubeUrl?: string; audioUrl?: string; youtubeDuration?: number }) => {
-    const c: Choreography = { 
-      id: Date.now().toString(), 
-      name, 
-      steps, 
-      createdAt: Date.now(), 
-      bpm: opts?.bpm ?? 120, 
-      loop: opts?.loop ?? false,
-      youtubeUrl: opts?.youtubeUrl,
-      audioUrl: opts?.audioUrl,
+    const c: Choreography = {
+      id: Date.now().toString(),
+      name,
+      steps,
+      createdAt: Date.now(),
+      bpm:   opts?.bpm  ?? 120,
+      loop:  opts?.loop ?? false,
+      youtubeUrl:      opts?.youtubeUrl,
+      audioUrl:        opts?.audioUrl,
       youtubeDuration: opts?.youtubeDuration,
     };
-    setChoreos(prev => { const u = [...prev, c]; persist(u); return u; });
+    setChoreos(prev => [...prev, c]);
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(c),
+    }).catch(() => toast.error('Error al guardar la coreografía'));
     return c;
   }, []);
 
   const update = useCallback((id: string, updates: Partial<Choreography>) => {
-    setChoreos(prev => { const u = prev.map(c => c.id === id ? { ...c, ...updates } : c); persist(u); return u; });
+    setChoreos(prev => {
+      const next = prev.map(c => c.id === id ? { ...c, ...updates } : c);
+      const choreo = next.find(c => c.id === id);
+      if (choreo) {
+        fetch(`${API}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(choreo),
+        }).catch(() => toast.error('Error al actualizar la coreografía'));
+      }
+      return next;
+    });
   }, []);
 
   const remove = useCallback((id: string) => {
-    setChoreos(prev => { const u = prev.filter(c => c.id !== id); persist(u); return u; });
+    setChoreos(prev => prev.filter(c => c.id !== id));
+    fetch(`${API}/${id}`, { method: 'DELETE' })
+      .catch(() => toast.error('Error al eliminar la coreografía'));
   }, []);
 
   return { choreos, save, update, remove };

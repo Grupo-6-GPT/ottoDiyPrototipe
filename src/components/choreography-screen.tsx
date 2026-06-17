@@ -1083,7 +1083,6 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
   }, [playing, steps, cleanup, commands]);
 
   const topIndex = topIdxMapRef.current[cmdIdx] ?? 0;
-  const currentTopStep = steps[topIndex] || null;       // step padre para chip y dots
   const currentAnimStep = animStepMapRef.current[cmdIdx] || null; // step hijo real para robot
   const progressPct = totalDuration > 0 ? Math.min((elapsed / totalDuration) * 100, 100) : 0;
 
