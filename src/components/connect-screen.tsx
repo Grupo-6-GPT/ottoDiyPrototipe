@@ -25,7 +25,7 @@ export function ConnectScreen() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-dvh overflow-y-auto px-5 pb-24 pt-8 md:justify-center md:py-12" style={{ WebkitOverflowScrolling: 'touch' as any }}>
+    <div className="flex flex-col items-center min-h-dvh overflow-y-auto px-5 pb-24 pt-8 md:justify-center md:py-12" style={{ WebkitOverflowScrolling: 'touch' as any, background: '#F8F8FF' }}>
       {/* Robot */}
       <motion.div
         initial={{ y: -15, opacity: 0 }}
@@ -38,7 +38,7 @@ export function ConnectScreen() {
       {/* Title */}
       <motion.h1
         className="mt-4 text-center"
-        style={{ fontSize: 26, fontWeight: 800, color: '#E8E8F0', letterSpacing: '-0.5px' }}
+        style={{ fontSize: 26, fontWeight: 800, color: '#080830', letterSpacing: '-0.5px' }}
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
@@ -46,7 +46,7 @@ export function ConnectScreen() {
         OttoDance
       </motion.h1>
       <motion.p
-        style={{ color: '#4A4A6A', fontSize: 13, marginTop: 2 }}
+        style={{ color: '#4848A0', fontSize: 14, marginTop: 2 }}
         initial={{ y: 8, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
@@ -57,25 +57,25 @@ export function ConnectScreen() {
       {/* Status */}
       <motion.div
         className="flex items-center gap-2 mt-5 px-3.5 py-2 rounded-full"
-        style={{ background: '#111120', border: '1px solid #1C1C30' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
         <motion.div
           className="w-2 h-2 rounded-full"
-          style={{ background: connected ? '#34D399' : connecting ? '#FBBF24' : '#EF4444' }}
+          style={{ background: connected ? '#059669' : connecting ? '#D97706' : '#EF4444' }}
           animate={connecting ? { opacity: [1, 0.3, 1] } : {}}
           transition={{ duration: 0.6, repeat: Infinity }}
         />
-        <span style={{ color: connected ? '#34D399' : connecting ? '#FBBF24' : '#5A5A7A', fontSize: 12, fontWeight: 600 }}>
+        <span style={{ color: connected ? '#059669' : connecting ? '#D97706' : '#383898', fontSize: 14, fontWeight: 600 }}>
           {connected ? 'Connected' : connecting ? 'Searching...' : 'Not connected'}
         </span>
         {connected && (
           <>
-            <div className="w-px h-3" style={{ background: '#1E1E33' }} />
-            <Battery size={13} style={{ color: battery > 20 ? '#34D399' : '#F87171' }} />
-            <span style={{ color: battery > 20 ? '#34D399' : '#F87171', fontSize: 12, fontWeight: 600 }}>{battery}%</span>
+            <div className="w-px h-3" style={{ background: '#B6B6D6' }} />
+            <Battery size={13} style={{ color: battery > 20 ? '#059669' : '#DC2626' }} />
+            <span style={{ color: battery > 20 ? '#059669' : '#DC2626', fontSize: 14, fontWeight: 600 }}>{battery}%</span>
           </>
         )}
       </motion.div>
@@ -84,10 +84,10 @@ export function ConnectScreen() {
       <motion.button
         className="mt-7 flex items-center gap-3 px-8 py-4 rounded-2xl cursor-pointer"
         style={{
-          background: connected ? '#160F12' : connecting ? '#141422' : '#15152A',
-          border: connected ? '1px solid #2A1520' : '1px solid #252545',
-          color: connected ? '#F87171' : '#C4B5FD',
-          fontSize: 16, fontWeight: 700,
+          background: connected ? '#FEF2F2' : connecting ? '#DDD8FF' : '#E4E8FF',
+          border: connected ? '1px solid #FECACA' : '1px solid #A4A4D2',
+          color: connected ? '#DC2626' : '#7C3AED',
+          fontSize: 17, fontWeight: 700,
           opacity: connecting ? 0.7 : 1,
           pointerEvents: connecting ? 'none' : 'auto',
         }}
@@ -118,40 +118,40 @@ export function ConnectScreen() {
             exit={{ y: 12, opacity: 0 }}
           >
             {/* Device card */}
-            <div className="p-3.5 rounded-xl" style={{ background: '#111120', border: '1px solid #1C1C30' }}>
+            <div className="p-3.5 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}>
               <div className="flex items-center gap-3 mb-2.5">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#1A1A30' }}>
-                  <Cpu size={16} style={{ color: '#818CF8' }} />
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#F8F8FF' }}>
+                  <Cpu size={16} style={{ color: '#6366F1' }} />
                 </div>
                 <div className="flex-1">
-                  <p style={{ color: '#D0D0E0', fontSize: 13, fontWeight: 700 }}>{deviceName || 'Otto-BT-001'}</p>
-                  <p style={{ color: '#4A4A6A', fontSize: 11 }}>{transportMode === 'serial' ? 'ESP32 · USB Serial' : 'ESP32 · BLE UART'}</p>
+                  <p style={{ color: '#101048', fontSize: 14, fontWeight: 700 }}>{deviceName || 'Otto-BT-001'}</p>
+                  <p style={{ color: '#4848A0', fontSize: 14 }}>{transportMode === 'serial' ? 'ESP32 · USB Serial' : 'ESP32 · BLE UART'}</p>
                 </div>
-                <ChevronRight size={14} style={{ color: '#3A3A5A' }} />
+                <ChevronRight size={14} style={{ color: '#5E5E9C' }} />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { icon: Signal, label: 'Signal', value: 'Strong', color: '#34D399' },
-                  { icon: Battery, label: 'Battery', value: `${battery}%`, color: battery > 20 ? '#34D399' : '#F87171' },
-                  { icon: Settings, label: 'Firmware', value: 'v2.1', color: '#818CF8' },
+                  { icon: Signal, label: 'Signal', value: 'Strong', color: '#059669' },
+                  { icon: Battery, label: 'Battery', value: `${battery}%`, color: battery > 20 ? '#059669' : '#DC2626' },
+                  { icon: Settings, label: 'Firmware', value: 'v2.1', color: '#6366F1' },
                 ].map(item => (
-                  <div key={item.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: '#0E0E1A' }}>
+                  <div key={item.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: '#FFFFFF' }}>
                     <item.icon size={12} style={{ color: item.color }} />
-                    <span style={{ color: item.color, fontSize: 11, fontWeight: 700 }}>{item.value}</span>
-                    <span style={{ color: '#3A3A5A', fontSize: 9 }}>{item.label}</span>
+                    <span style={{ color: item.color, fontSize: 14, fontWeight: 700 }}>{item.value}</span>
+                    <span style={{ color: '#5E5E9C', fontSize: 14 }}>{item.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Servo test hint */}
-            <div className="p-3 rounded-xl flex items-center gap-2.5" style={{ background: '#111120', border: '1px solid #1C1C30' }}>
-              <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: '#1A1A30' }}>
+            <div className="p-3 rounded-xl flex items-center gap-2.5" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}>
+              <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: '#F8F8FF' }}>
                 <span style={{ fontSize: 14 }}>🔧</span>
               </div>
               <div className="flex-1">
-                <p style={{ color: '#B0B0C8', fontSize: 12, fontWeight: 600 }}>4 servos detected</p>
-                <p style={{ color: '#3A3A5A', fontSize: 10 }}>Left hip · Right hip · Left foot · Right foot</p>
+                <p style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>4 servos detected</p>
+                <p style={{ color: '#5E5E9C', fontSize: 14 }}>Left hip · Right hip · Left foot · Right foot</p>
               </div>
             </div>
           </motion.div>

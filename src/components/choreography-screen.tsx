@@ -21,14 +21,22 @@ function pulse() { if (navigator.vibrate) navigator.vibrate(15); }
 const MOVE_DESCRIPTIONS: Record<string, string> = {
   WALK_F: 'Otto camina hacia adelante con pasos reales',
   WALK_B: 'Otto camina hacia atrás con pasos reales',
+  WALK_F_FAST: 'Otto camina rápido hacia adelante',
+  WALK_F_SLOW: 'Otto camina despacio hacia adelante',
+  WALK_B_FAST: 'Otto retrocede rápido',
+  WALK_B_SLOW: 'Otto retrocede despacio',
   TURN_L: 'Otto gira a la izquierda en su lugar',
   TURN_R: 'Otto gira a la derecha en su lugar',
+  TURN_L_FAST: 'Otto gira rápido a la izquierda',
+  TURN_R_FAST: 'Otto gira rápido a la derecha',
   JUMP: 'Otto salta con ambas piernas',
   MOONWALK: 'Otto hace moonwalk hacia adelante',
   MOONWALK_B: 'Otto hace moonwalk hacia atrás',
   SPIN: 'Otto gira 360° sobre sí mismo',
   SPIN_L: 'Otto gira lentamente hacia la izquierda',
   SPIN_R: 'Otto gira lentamente hacia la derecha',
+  SPIN_L_FAST: 'Otto gira rápido hacia la izquierda',
+  SPIN_R_FAST: 'Otto gira rápido hacia la derecha',
   MARCH_F: 'Otto marcha con pasos marcados hacia adelante',
   MARCH_B: 'Otto marcha con pasos marcados hacia atrás',
   SNEAK_F: 'Otto se desliza sigilosamente hacia adelante',
@@ -51,6 +59,7 @@ const MOVE_DESCRIPTIONS: Record<string, string> = {
   PIGEON_R: 'Otto adopta la postura pigeon hacia la derecha',
   KICK_L: 'Otto da una patada lateral con la pierna izquierda',
   KICK_R: 'Otto da una patada lateral con la pierna derecha',
+  STOMP: 'Otto pisa fuerte con ambas piernas alternativamente',
   STOMP_L: 'Otto pisa fuerte con la pierna izquierda',
   STOMP_R: 'Otto pisa fuerte con la pierna derecha',
   STOMP_ALTERNATE: 'Otto da pisotones alternados',
@@ -100,6 +109,7 @@ const MOVE_DESCRIPTIONS: Record<string, string> = {
   SHAKE_IT: 'Otto realiza un combo de sacudidas y onda',
   DEMO: 'Otto pasa por una rutina de demostración',
   FREEZE: 'Otto mantiene la pose quieto',
+  HOME: 'Otto vuelve a la posición neutral',
   BEEP: 'Otto emite un bip corto',
   MELODY: 'Otto toca una pequeña melodía',
   PAUSE: 'Otto espera antes del siguiente paso',
@@ -120,9 +130,9 @@ function DurationPicker({
           style={{
             padding: compact ? '1px 5px' : '2px 6px',
             fontSize: compact ? 9 : 10, fontWeight: 600,
-            background: value === o ? '#1E1E3A' : 'transparent',
-            color: value === o ? '#C4B5FD' : '#3A3A5A',
-            border: value === o ? '1px solid #2E2E50' : '1px solid transparent',
+            background: value === o ? '#E0D9FF' : 'transparent',
+            color: value === o ? '#7C3AED' : '#5E5E9C',
+            border: value === o ? '1px solid #9696D6' : '1px solid transparent',
           }}
         >{labels[i]}</button>
       ))}
@@ -139,14 +149,14 @@ function MiniSlider({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
-        <span style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600 }}>{label}</span>
-        <span style={{ color, fontSize: 11, fontWeight: 700 }}>{value}{unit}</span>
+        <span style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>{label}</span>
+        <span style={{ color, fontSize: 14, fontWeight: 700 }}>{value}{unit}</span>
       </div>
-      <div className="px-1 py-2 rounded-xl" style={{ background: '#14141F' }}>
+      <div className="px-1 py-2 rounded-xl" style={{ background: '#F0EEFF' }}>
         <Slider value={[value]} min={min} max={max} step={step}
           onValueChange={([next]) => onChange(next)} className="w-full" />
       </div>
-      <div className="flex items-center justify-between gap-2 text-[10px] text-[#5A5A7A]">
+      <div className="flex items-center justify-between gap-2 text-[10px] text-[#383898]">
         <span>{min}</span><span>{Math.round((min + max) / 2)}</span><span>{max}</span>
       </div>
     </div>
@@ -156,7 +166,7 @@ function MiniSlider({
 function StepAddedToast({ name, icon }: { name: string; icon: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontSize: 14 }}>{icon}</span>
       <span style={{ fontWeight: 600 }}>Added: {name}</span>
     </div>
   );
@@ -186,29 +196,29 @@ function PositionPickerSheet({
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#111120', border: '1px solid #1C1C30', borderBottom: 'none' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
         initial={{ y: 320 }} animate={{ y: 0 }} exit={{ y: 320 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#252540' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
         <div className="px-5 pb-10 overflow-y-auto" style={{ maxHeight: '75vh', WebkitOverflowScrolling: 'touch' }}>
           <div className="flex items-center gap-3 mb-4">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ background: `${color}15`, border: `1px solid ${color}30` }}
             >
-              <span style={{ fontSize: 18 }}>{icon}</span>
+              <span style={{ fontSize: 14 }}>{icon}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 style={{ color: '#E8E8F0', fontSize: 15, fontWeight: 700 }}>{label}</h3>
-              <p style={{ color: '#4A4A6A', fontSize: 11 }}>Elige dónde insertarlo</p>
+              <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>{label}</h3>
+              <p style={{ color: '#4848A0', fontSize: 14 }}>Elige dónde insertarlo</p>
             </div>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#1A1A30' }}
+              style={{ background: '#EDE9FE' }}
             >
-              <X size={14} style={{ color: '#6A6A8A' }} />
+              <X size={14} style={{ color: '#303090' }} />
             </button>
           </div>
 
@@ -222,27 +232,27 @@ function PositionPickerSheet({
               <div key={s.id}>
                 <div
                   className="flex items-center gap-2.5 px-3 py-2 my-0.5 rounded-xl"
-                  style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+                  style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
                 >
-                  <span style={{ color: '#3A3A5A', fontSize: 10, fontWeight: 700, minWidth: 18 }}>
+                  <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, minWidth: 18 }}>
                     {i + 1}
                   </span>
                   <div
                     className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
                     style={{ background: `${s.color}0A`, border: `1px solid ${s.color}18` }}
                   >
-                    <span style={{ fontSize: 12 }}>{s.isGroup ? '📦' : s.icon}</span>
+                    <span style={{ fontSize: 14 }}>{s.isGroup ? '📦' : s.icon}</span>
                   </div>
-                  <p className="truncate" style={{ color: '#9090A8', fontSize: 12, fontWeight: 600, flex: 1 }}>
+                  <p className="truncate" style={{ color: '#1E1E78', fontSize: 14, fontWeight: 600, flex: 1 }}>
                     {s.name}
                   </p>
                   {s.isGroup && (
-                    <span style={{ color: '#5A5A7A', fontSize: 10 }}>
+                    <span style={{ color: '#383898', fontSize: 14 }}>
                       {s.children?.length ?? 0} pasos
                     </span>
                   )}
                   {!s.isGroup && s.repetitions > 1 && (
-                    <span style={{ color: '#5A5A7A', fontSize: 10 }}>×{s.repetitions}</span>
+                    <span style={{ color: '#383898', fontSize: 14 }}>×{s.repetitions}</span>
                   )}
                 </div>
                 <InsertSlot
@@ -275,15 +285,15 @@ function InsertSlot({
       className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg cursor-pointer transition-all active:scale-98"
       style={{
         background: hovered ? `${color}12` : 'transparent',
-        border: `1px dashed ${hovered ? color + '55' : '#1A1A2A'}`,
+        border: `1px dashed ${hovered ? color + '55' : '#A6A6D4'}`,
         marginTop: 2, marginBottom: 2,
       }}
       whileTap={{ scale: 0.97 }}
     >
-      <ArrowDownToLine size={12} style={{ color: hovered ? color : '#2E2E48', flexShrink: 0 }} />
+      <ArrowDownToLine size={12} style={{ color: hovered ? color : '#7878A8', flexShrink: 0 }} />
       <span style={{
-        color: hovered ? color : '#2E2E48',
-        fontSize: 10, fontWeight: 600, textAlign: 'left',
+        color: hovered ? color : '#7878A8',
+        fontSize: 14, fontWeight: 600, textAlign: 'left',
       }}>
         {label}
       </span>
@@ -315,23 +325,23 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#111120', border: '1px solid #1C1C30', borderBottom: 'none' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
         initial={{ y: 320 }} animate={{ y: 0 }} exit={{ y: 320 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#252540' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
         <div className="px-5 pb-10 overflow-y-auto" style={{ maxHeight: '75vh', WebkitOverflowScrolling: 'touch' }}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: '#1A1A30', border: '1px solid #252545' }}
+                style={{ background: '#EDE9FE', border: '1px solid #A4A4D2' }}
               >
-                <Package size={18} style={{ color: '#C4B5FD' }} />
+                <Package size={18} style={{ color: '#7C3AED' }} />
               </div>
               <div>
-                <h3 style={{ color: '#E8E8F0', fontSize: 15, fontWeight: 700 }}>Crear grupo</h3>
-                <p style={{ color: '#4A4A6A', fontSize: 11 }}>
+                <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>Crear grupo</h3>
+                <p style={{ color: '#4848A0', fontSize: 14 }}>
                   {selectedSteps.length} pasos seleccionados
                 </p>
               </div>
@@ -339,15 +349,15 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#1A1A30' }}
+              style={{ background: '#EDE9FE' }}
             >
-              <X size={14} style={{ color: '#6A6A8A' }} />
+              <X size={14} style={{ color: '#303090' }} />
             </button>
           </div>
 
           <div
             className="flex gap-1.5 flex-wrap mb-4 p-2.5 rounded-xl"
-            style={{ background: '#0D0D1A', border: '1px solid #161628' }}
+            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
           >
             {selectedSteps.map(s => (
               <div
@@ -355,13 +365,13 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
                 className="flex items-center gap-1 px-2 py-1 rounded-lg"
                 style={{ background: `${s.color}10`, border: `1px solid ${s.color}20` }}
               >
-                <span style={{ fontSize: 12 }}>{s.icon}</span>
-                <span style={{ color: s.color, fontSize: 10, fontWeight: 600 }}>{s.name}</span>
+                <span style={{ fontSize: 14 }}>{s.icon}</span>
+                <span style={{ color: s.color, fontSize: 14, fontWeight: 600 }}>{s.name}</span>
               </div>
             ))}
           </div>
 
-          <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
+          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             Nombre del grupo
           </p>
           <input
@@ -370,13 +380,13 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             placeholder="Ej: Intro, Coro, Final..."
             className="w-full px-3.5 py-3 rounded-xl mb-4 outline-none transition-all"
             style={{
-              background: '#0E0E1A',
-              border: `1px solid ${name.trim() ? '#252545' : '#1E1E35'}`,
-              color: '#E8E8F0', fontSize: 13,
+              background: '#FFFFFF',
+              border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`,
+              color: '#080830', fontSize: 14,
             }}
           />
 
-          <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
+          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
             Repeticiones
           </p>
           <div className="flex gap-1.5 mb-5 flex-wrap">
@@ -386,10 +396,10 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
                 onClick={() => { setReps(r); pulse(); }}
                 className="w-10 h-10 rounded-lg cursor-pointer transition-all active:scale-90"
                 style={{
-                  background: reps === r ? '#1A1A30' : 'transparent',
-                  color: reps === r ? '#C4B5FD' : '#3A3A5A',
-                  border: reps === r ? '1px solid #252545' : '1px solid #181828',
-                  fontSize: 11, fontWeight: 700,
+                  background: reps === r ? '#EDE9FE' : 'transparent',
+                  color: reps === r ? '#7C3AED' : '#5E5E9C',
+                  border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                  fontSize: 14, fontWeight: 700,
                 }}
               >{r}×</button>
             ))}
@@ -397,10 +407,10 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
 
           <div
             className="flex items-center justify-between px-3 py-2 rounded-xl mb-4"
-            style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
           >
-            <span style={{ color: '#4A4A6A', fontSize: 11 }}>Duración estimada</span>
-            <span style={{ color: '#C4B5FD', fontSize: 12, fontWeight: 700 }}>
+            <span style={{ color: '#4848A0', fontSize: 14 }}>Duración estimada</span>
+            <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700 }}>
               {(selectedSteps.reduce((a, s) => a + getStepEstimatedDuration(s), 0) * reps / 1000).toFixed(1)}s
             </span>
           </div>
@@ -412,8 +422,8 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             }}
             className="w-full py-3 rounded-xl cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#C4B5FD', border: '1px solid #2E2E55',
-              color: '#0B0B14', fontSize: 13, fontWeight: 600,
+              background: '#7C3AED', border: '1px solid #9494D4',
+              color: '#FFFFFF', fontSize: 14, fontWeight: 600,
             }}
           >
             Crear grupo
@@ -467,11 +477,11 @@ function EditSheet({
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#111120', border: '1px solid #1C1C30', borderBottom: 'none' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
         initial={{ y: 300 }} animate={{ y: 0 }} exit={{ y: 300 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#252540' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
         <div
           className="px-5 pb-8 overflow-y-auto"
           style={{ maxHeight: 'calc(85vh - 24px)', WebkitOverflowScrolling: 'touch', paddingBottom: '6rem' }}
@@ -482,11 +492,11 @@ function EditSheet({
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{ background: `${step.color}12`, border: `1px solid ${step.color}25` }}
               >
-                <span style={{ fontSize: 18, color: step.color }}>{step.icon}</span>
+                <span style={{ fontSize: 14, color: step.color }}>{step.icon}</span>
               </div>
               <div>
-                <h3 style={{ color: '#E8E8F0', fontSize: 16, fontWeight: 700 }}>{step.name}</h3>
-                <span style={{ color: '#4A4A6A', fontSize: 11 }}>
+                <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>{step.name}</h3>
+                <span style={{ color: '#4848A0', fontSize: 14 }}>
                   Paso {stepIndex + 1} de {totalSteps} · {step.command}
                 </span>
               </div>
@@ -494,53 +504,53 @@ function EditSheet({
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#1A1A30' }}
+              style={{ background: '#EDE9FE' }}
             >
-              <X size={14} style={{ color: '#6A6A8A' }} />
+              <X size={14} style={{ color: '#303090' }} />
             </button>
           </div>
           {desc && (
-            <p className="mb-4 ml-[52px]" style={{ color: '#4A4A6A', fontSize: 11, marginTop: -2 }}>
+            <p className="mb-4 ml-[52px]" style={{ color: '#4848A0', fontSize: 14, marginTop: -2 }}>
               {desc}
             </p>
           )}
 
           <div
             className="flex items-center gap-2 mb-4 px-2 py-2 rounded-xl"
-            style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
           >
-            <span style={{ color: '#4A4A6A', fontSize: 11, fontWeight: 600 }}>Posición:</span>
+            <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 600 }}>Posición:</span>
             <button
               onClick={() => { if (canUp) { onReorder(stepIndex, stepIndex - 1); pulse(); } }}
               disabled={!canUp}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#151528', opacity: canUp ? 1 : 0.25 }}
+              style={{ background: '#F5F3FF', opacity: canUp ? 1 : 0.25 }}
             >
-              <ChevronUp size={14} style={{ color: '#818CF8' }} />
+              <ChevronUp size={14} style={{ color: '#6366F1' }} />
             </button>
-            <span style={{ color: '#C4B5FD', fontSize: 13, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>
+            <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>
               {stepIndex + 1}
             </span>
             <button
               onClick={() => { if (canDown) { onReorder(stepIndex, stepIndex + 1); pulse(); } }}
               disabled={!canDown}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#151528', opacity: canDown ? 1 : 0.25 }}
+              style={{ background: '#F5F3FF', opacity: canDown ? 1 : 0.25 }}
             >
-              <ChevronDown size={14} style={{ color: '#818CF8' }} />
+              <ChevronDown size={14} style={{ color: '#6366F1' }} />
             </button>
             <div className="flex-1" />
             <button
               onClick={() => { onDuplicateHere(step.id); pulse(); toast.success('Paso duplicado justo después'); onClose(); }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-90"
-              style={{ background: '#151528', color: '#818CF8', fontSize: 11, fontWeight: 600 }}
+              style={{ background: '#F5F3FF', color: '#6366F1', fontSize: 14, fontWeight: 600 }}
             >
               <Copy size={12} /> Duplicar aquí
             </button>
             <button
               onClick={() => { onDuplicateAtPosition(step.id); }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-90"
-              style={{ background: '#151528', color: '#C4B5FD', fontSize: 11, fontWeight: 600 }}
+              style={{ background: '#F5F3FF', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
               title="Elegir dónde duplicar"
             >
               <MapPin size={12} />
@@ -549,19 +559,19 @@ function EditSheet({
 
           {step.parameterized ? (
             <>
-              <MiniSlider label="Duración" value={duration} min={100} max={3000} step={50} unit="ms" color="#818CF8" onChange={setDuration} />
+              <MiniSlider label="Duración" value={duration} min={100} max={3000} step={50} unit="ms" color="#6366F1" onChange={setDuration} />
               <div className="h-3.5" />
             </>
           ) : (
-            <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#0E0E1A', border: '1px solid #161628' }}>
-              <span style={{ color: '#4A4A6A', fontSize: 11, fontWeight: 600 }}>Duración real</span>
-              <div style={{ color: '#C4B5FD', fontSize: 14, fontWeight: 700, marginTop: 4 }}>
+            <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+              <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 600 }}>Duración real</span>
+              <div style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, marginTop: 4 }}>
                 {(getStepEstimatedDuration(step) / 1000).toFixed(1)}s
               </div>
             </div>
           )}
 
-          <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Velocidad</p>
+          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Velocidad</p>
           <div className="flex gap-2 mb-3.5">
             {(['slow', 'normal', 'fast'] as const).map(s => (
               <button
@@ -569,10 +579,10 @@ function EditSheet({
                 onClick={() => { setSpeed(s); pulse(); }}
                 className="flex-1 py-2.5 rounded-xl capitalize cursor-pointer transition-all active:scale-95"
                 style={{
-                  background: speed === s ? '#1A1A30' : 'transparent',
-                  color: speed === s ? '#C4B5FD' : '#3A3A5A',
-                  border: speed === s ? '1px solid #252545' : '1px solid #181828',
-                  fontSize: 12, fontWeight: 600,
+                  background: speed === s ? '#EDE9FE' : 'transparent',
+                  color: speed === s ? '#7C3AED' : '#5E5E9C',
+                  border: speed === s ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                  fontSize: 14, fontWeight: 600,
                 }}
               >
                 {s === 'slow' ? '🐢 Lento' : s === 'normal' ? '🚶 Normal' : '⚡ Rápido'}
@@ -582,13 +592,13 @@ function EditSheet({
 
           {step.isGroup ? (
             <>
-              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#0E0E1A', border: '1px solid #161628' }}>
+              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p style={{ color: '#C4B5FD', fontSize: 12, fontWeight: 700 }}>
+                    <p style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700 }}>
                       Grupo · {(step.children?.length ?? 0)} pasos
                     </p>
-                    <p style={{ color: '#8A8AB0', fontSize: 10 }}>
+                    <p style={{ color: '#222280', fontSize: 14 }}>
                       Repite ×{step.repetitions} · {step.children?.length ?? 0} pasos
                     </p>
                   </div>
@@ -597,7 +607,7 @@ function EditSheet({
                       <button
                         onClick={() => { onDuplicateGroup(step.id); pulse(); onClose(); }}
                         className="px-2 py-1 rounded-lg"
-                        style={{ background: 'transparent', color: '#C4B5FD', fontSize: 11, fontWeight: 700, border: '1px solid #252545' }}
+                        style={{ background: 'transparent', color: '#7C3AED', fontSize: 14, fontWeight: 700, border: '1px solid #A4A4D2' }}
                       >
                         Duplicar
                       </button>
@@ -606,7 +616,7 @@ function EditSheet({
                       <button
                         onClick={() => { onUngroup(step.id); pulse(); onClose(); }}
                         className="px-2 py-1 rounded-lg"
-                        style={{ background: 'transparent', color: '#F87171', fontSize: 11, fontWeight: 700, border: '1px solid #252545' }}
+                        style={{ background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 700, border: '1px solid #A4A4D2' }}
                       >
                         Desagrupar
                       </button>
@@ -615,7 +625,7 @@ function EditSheet({
                 </div>
               </div>
 
-              <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Repeticiones</p>
+              <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repeticiones</p>
               <div className="flex gap-1.5 mb-3.5 flex-wrap">
                 {[1, 2, 3, 4, 5, 6, 8, 10].map(r => (
                   <button
@@ -626,38 +636,38 @@ function EditSheet({
                     }}
                     className="w-10 h-10 rounded-lg cursor-pointer transition-all active:scale-90"
                     style={{
-                      background: reps === r ? '#1A1A30' : 'transparent',
-                      color: reps === r ? '#C4B5FD' : '#3A3A5A',
-                      border: reps === r ? '1px solid #252545' : '1px solid #181828',
-                      fontSize: 11, fontWeight: 700,
+                      background: reps === r ? '#EDE9FE' : 'transparent',
+                      color: reps === r ? '#7C3AED' : '#5E5E9C',
+                      border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                      fontSize: 14, fontWeight: 700,
                     }}
                   >{r}×</button>
                 ))}
               </div>
 
-              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#0E0E1A', border: '1px solid #161628' }}>
+              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
                 <div className="flex items-center justify-between">
-                  <span style={{ color: '#4A4A6A', fontSize: 11 }}>Pasos del grupo</span>
+                  <span style={{ color: '#4848A0', fontSize: 14 }}>Pasos del grupo</span>
                   <button
                     onClick={() => setGroupExpanded(e => !e)}
-                    className="text-sm" style={{ color: '#8A8AB0' }}
+                    className="text-sm" style={{ color: '#222280' }}
                   >
                     {groupExpanded ? 'Ocultar' : 'Mostrar'}
                   </button>
                 </div>
                 {groupExpanded && step.children?.map(c => (
-                  <div key={c.id} className="mt-2 px-2 py-2 rounded-md" style={{ background: '#0B0B12', border: '1px solid #0F0F18' }}>
+                  <div key={c.id} className="mt-2 px-2 py-2 rounded-md" style={{ background: '#FFFFFF', border: '1px solid #F0EEFF' }}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: `${c.color}0A`, border: `1px solid ${c.color}15` }}>
-                          <span style={{ fontSize: 12 }}>{c.icon}</span>
+                          <span style={{ fontSize: 14 }}>{c.icon}</span>
                         </div>
                         <div>
-                          <div style={{ color: '#B0B0C8', fontSize: 12, fontWeight: 600 }}>{c.name}</div>
-                          <div style={{ color: '#5A5A7A', fontSize: 11 }}>{c.command}</div>
+                          <div style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>{c.name}</div>
+                          <div style={{ color: '#383898', fontSize: 14 }}>{c.command}</div>
                         </div>
                       </div>
-                      <div style={{ color: '#C4B5FD', fontWeight: 700 }}>
+                      <div style={{ color: '#7C3AED', fontWeight: 700 }}>
                         {(getStepEstimatedDuration(c) / 1000).toFixed(1)}s
                       </div>
                     </div>
@@ -667,7 +677,7 @@ function EditSheet({
             </>
           ) : (
             <>
-              <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>Repetir</p>
+              <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repetir</p>
               <div className="flex gap-1.5 mb-3.5 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {[1, 2, 3, 4, 5, 6, 8, 10].map(r => (
                   <button
@@ -675,10 +685,10 @@ function EditSheet({
                     onClick={() => { setReps(r); pulse(); }}
                     className="flex-shrink-0 w-10 h-10 rounded-lg cursor-pointer transition-all active:scale-90"
                     style={{
-                      background: reps === r ? '#1A1A30' : 'transparent',
-                      color: reps === r ? '#C4B5FD' : '#3A3A5A',
-                      border: reps === r ? '1px solid #252545' : '1px solid #181828',
-                      fontSize: 11, fontWeight: 700,
+                      background: reps === r ? '#EDE9FE' : 'transparent',
+                      color: reps === r ? '#7C3AED' : '#5E5E9C',
+                      border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                      fontSize: 14, fontWeight: 700,
                     }}
                   >{r}×</button>
                 ))}
@@ -686,22 +696,22 @@ function EditSheet({
             </>
           )}
 
-          <MiniSlider label="Pausa después" value={pauseAfter} min={0} max={2000} step={50} unit="ms" color="#FBBF24" onChange={setPauseAfter} />
+          <MiniSlider label="Pausa después" value={pauseAfter} min={0} max={2000} step={50} unit="ms" color="#D97706" onChange={setPauseAfter} />
           <div className="h-3.5" />
 
           {isSound && (
             <>
-              <MiniSlider label="Frecuencia" value={soundFreq} min={200} max={2000} step={50} unit="Hz" color="#A78BFA" onChange={setSoundFreq} />
+              <MiniSlider label="Frecuencia" value={soundFreq} min={200} max={2000} step={50} unit="Hz" color="#8B5CF6" onChange={setSoundFreq} />
               <div className="h-3.5" />
             </>
           )}
 
           <div
             className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4"
-            style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
           >
-            <span style={{ color: '#4A4A6A', fontSize: 11 }}>Tiempo total de este paso:</span>
-            <span style={{ color: '#C4B5FD', fontSize: 12, fontWeight: 700, marginLeft: 'auto' }}>
+            <span style={{ color: '#4848A0', fontSize: 14 }}>Tiempo total de este paso:</span>
+            <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, marginLeft: 'auto' }}>
               {((duration + pauseAfter) * reps / 1000).toFixed(1)}s
             </span>
           </div>
@@ -710,7 +720,7 @@ function EditSheet({
             <button
               onClick={() => { onDelete(step.id); pulse(); onClose(); toast('Paso eliminado', { icon: '🗑️' }); }}
               className="py-3 px-5 rounded-xl cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-95"
-              style={{ background: '#160F12', color: '#F87171', border: '1px solid #2A1520', fontSize: 12, fontWeight: 600 }}
+              style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', fontSize: 14, fontWeight: 600 }}
             >
               <Trash2 size={14} /> Eliminar
             </button>
@@ -720,7 +730,7 @@ function EditSheet({
                 pulse(); onClose(); toast.success('Paso actualizado');
               }}
               className="flex-1 py-3 rounded-xl cursor-pointer transition-all active:scale-95"
-              style={{ background: '#1A1A35', color: '#C4B5FD', border: '1px solid #2E2E55', fontSize: 13, fontWeight: 600 }}
+              style={{ background: '#E0D9FF', color: '#7C3AED', border: '1px solid #9494D4', fontSize: 14, fontWeight: 600 }}
             >
               Guardar cambios
             </button>
@@ -755,24 +765,24 @@ function MovePickerSheet({ bodyPart, onClose, onSelect }: {
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#111120', border: '1px solid #1C1C30', borderBottom: 'none' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
         initial={{ y: 250 }} animate={{ y: 0 }} exit={{ y: 250 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#252540' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
         <div className="px-5 pb-8 overflow-y-auto" style={{ maxHeight: '70vh', WebkitOverflowScrolling: 'touch' }}>
-          <h3 className="mb-0.5" style={{ color: '#E8E8F0', fontSize: 15, fontWeight: 700 }}>
+          <h3 className="mb-0.5" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>
             {titles[bodyPart] || bodyPart}
           </h3>
-          <p className="mb-3" style={{ color: '#4A4A6A', fontSize: 11 }}>
+          <p className="mb-3" style={{ color: '#4848A0', fontSize: 14 }}>
             Toca un paso para añadirlo.
           </p>
           <div className="mb-3">
             {moves.some(m => 'parameterized' in m && m.parameterized) ? (
               <DurationPicker value={duration} onChange={setDuration} />
             ) : (
-              <div className="rounded-xl px-3 py-2" style={{ background: '#0E0E1A', border: '1px solid #161628' }}>
-                <span style={{ color: '#4A4A6A', fontSize: 11 }}>Duración fija real para cada paso</span>
+              <div className="rounded-xl px-3 py-2" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+                <span style={{ color: '#4848A0', fontSize: 14 }}>Duración fija real para cada paso</span>
               </div>
             )}
           </div>
@@ -782,24 +792,24 @@ function MovePickerSheet({ bodyPart, onClose, onSelect }: {
                 key={move.command}
                 onClick={() => { onSelect(move, duration); pulse(); onClose(); }}
                 className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
-                style={{ background: '#151528', border: '1px solid #1E1E35' }}
-                whileTap={{ scale: 0.96, backgroundColor: '#1A1A35' }}
+                style={{ background: '#F5F3FF', border: '1px solid #B2B2D2' }}
+                whileTap={{ scale: 0.96, backgroundColor: '#E0D9FF' }}
               >
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center"
                   style={{ background: `${move.color}10`, border: `1px solid ${move.color}20` }}
                 >
-                  <span style={{ fontSize: 16, color: move.color }}>{move.icon}</span>
+                  <span style={{ fontSize: 14, color: move.color }}>{move.icon}</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <p style={{ color: '#D0D0E0', fontSize: 13, fontWeight: 600 }}>{move.name}</p>
-                  <p style={{ color: '#3A3A5A', fontSize: 10 }}>{MOVE_DESCRIPTIONS[move.command]}</p>
+                  <p style={{ color: '#101048', fontSize: 14, fontWeight: 600 }}>{move.name}</p>
+                  <p style={{ color: '#5E5E9C', fontSize: 14 }}>{MOVE_DESCRIPTIONS[move.command]}</p>
                 </div>
                 <div className="text-right" style={{ minWidth: 64 }}>
                   {'parameterized' in move && move.parameterized ? (
-                    <span style={{ color: '#C4B5FD', fontSize: 10, fontWeight: 700 }}>Ajustable</span>
+                    <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700 }}>Ajustable</span>
                   ) : (
-                    <span style={{ color: '#94A3B8', fontSize: 10, fontWeight: 700 }}>
+                    <span style={{ color: '#404098', fontSize: 14, fontWeight: 700 }}>
                       {(move.arduinoDuration / 1000).toFixed(1)}s real
                     </span>
                   )}
@@ -895,13 +905,13 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
       />
       <motion.div
         className="relative w-full max-w-sm rounded-2xl p-5"
-        style={{ background: '#111120', border: '1px solid #1C1C30' }}
+        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}
         initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
       >
-        <h3 className="mb-1" style={{ color: '#E8E8F0', fontSize: 16, fontWeight: 700 }}>
+        <h3 className="mb-1" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>
           {isUpdate ? 'Actualizar coreografía' : 'Guardar coreografía'}
         </h3>
-        <p className="mb-4" style={{ color: '#4A4A6A', fontSize: 11 }}>
+        <p className="mb-4" style={{ color: '#4848A0', fontSize: 14 }}>
           {stepsCount} pasos · {(totalTimeMs / 1000).toFixed(1)}s total
         </p>
 
@@ -911,33 +921,33 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           autoFocus
           className="w-full px-3.5 py-3 rounded-xl mb-3 outline-none transition-all"
           style={{
-            background: '#0E0E1A',
-            border: `1px solid ${name.trim() ? '#252545' : '#1E1E35'}`,
-            color: '#E8E8F0', fontSize: 14,
+            background: '#FFFFFF',
+            border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`,
+            color: '#080830', fontSize: 14,
           }}
           onKeyDown={e => { if (e.key === 'Enter' && name.trim()) { handleSave(); } }}
         />
 
-        <MiniSlider label="BPM" value={bpm} min={60} max={200} step={5} unit="" color="#818CF8" onChange={setBpm} />
+        <MiniSlider label="BPM" value={bpm} min={60} max={200} step={5} unit="" color="#6366F1" onChange={setBpm} />
         <div className="h-3" />
 
         <label className="flex items-center gap-3 cursor-pointer mb-4">
           <button
             onClick={() => setLoop(!loop)}
             className="w-10 h-6 rounded-full relative transition-all cursor-pointer"
-            style={{ background: loop ? '#252550' : '#1A1A2A', border: `1px solid ${loop ? '#3A3A6A' : '#1E1E35'}` }}
+            style={{ background: loop ? '#A2A2D0' : '#A6A6D4', border: `1px solid ${loop ? '#8080C8' : '#B2B2D2'}` }}
           >
             <motion.div
               className="w-4 h-4 rounded-full absolute top-0.5"
-              style={{ background: loop ? '#C4B5FD' : '#3A3A5A' }}
+              style={{ background: loop ? '#7C3AED' : '#5E5E9C' }}
               animate={{ left: loop ? 20 : 4 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             />
           </button>
-          <span style={{ color: '#B0B0C8', fontSize: 13 }}>Loop coreografía</span>
+          <span style={{ color: '#18186A', fontSize: 14 }}>Loop coreografía</span>
         </label>
 
-        <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
+        <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
           🎵 URL de YouTube (opcional)
         </p>
         <div className="flex gap-2 mb-3">
@@ -947,9 +957,9 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             placeholder="https://youtube.com/watch?v=..."
             className="flex-1 px-3.5 py-2.5 rounded-lg outline-none transition-all"
             style={{
-              background: '#0E0E1A',
-              border: `1px solid ${youtubeUrl.trim() ? '#252545' : '#1E1E35'}`,
-              color: '#E8E8F0', fontSize: 12,
+              background: '#FFFFFF',
+              border: `1px solid ${youtubeUrl.trim() ? '#A4A4D2' : '#B2B2D2'}`,
+              color: '#080830', fontSize: 14,
             }}
           />
           <button
@@ -957,8 +967,8 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             disabled={!youtubeUrl.trim() || loadingDuration}
             className="px-3 py-2.5 rounded-lg cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#1A1A35', border: '1px solid #2E2E55',
-              color: '#818CF8', fontSize: 12, fontWeight: 600,
+              background: '#E0D9FF', border: '1px solid #9494D4',
+              color: '#6366F1', fontSize: 14, fontWeight: 600,
               opacity: youtubeUrl.trim() && !loadingDuration ? 1 : 0.4,
             }}
           >
@@ -966,12 +976,12 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           </button>
         </div>
         {youtubeDuration && (
-          <p style={{ color: '#4A4A6A', fontSize: 10, marginBottom: 3 }}>
+          <p style={{ color: '#4848A0', fontSize: 14, marginBottom: 3 }}>
             Duración: {Math.floor(youtubeDuration / 60)}:{String(youtubeDuration % 60).padStart(2, '0')}
           </p>
         )}
 
-        <p style={{ color: '#5A5A7A', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
+        <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
           🔊 Audio (extraído automáticamente o URL directo)
         </p>
         <input
@@ -980,13 +990,13 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           placeholder="URL de audio (Spotify, SoundCloud, archivo.mp3, etc.)"
           className="w-full px-3.5 py-2.5 rounded-lg outline-none transition-all mb-3"
           style={{
-            background: '#0E0E1A',
-            border: `1px solid ${audioUrl.trim() ? '#252545' : '#1E1E35'}`,
-            color: '#E8E8F0', fontSize: 12,
+            background: '#FFFFFF',
+            border: `1px solid ${audioUrl.trim() ? '#A4A4D2' : '#B2B2D2'}`,
+            color: '#080830', fontSize: 14,
           }}
         />
         {audioUrl && (
-          <p style={{ color: '#34D399', fontSize: 10, marginBottom: 3 }}>
+          <p style={{ color: '#059669', fontSize: 14, marginBottom: 3 }}>
             ✓ Audio configurado - se reproducirá al bailar
           </p>
         )}
@@ -995,7 +1005,7 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           <button
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: 'transparent', border: '1px solid #1E1E35', color: '#5A5A7A', fontSize: 13, fontWeight: 600 }}
+            style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}
           >
             Cancelar
           </button>
@@ -1003,8 +1013,8 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             onClick={handleSave}
             className="flex-1 py-2.5 rounded-xl cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#1A1A35', border: '1px solid #2E2E55',
-              color: '#C4B5FD', fontSize: 13, fontWeight: 600,
+              background: '#E0D9FF', border: '1px solid #9494D4',
+              color: '#7C3AED', fontSize: 14, fontWeight: 600,
               opacity: name.trim() ? 1 : 0.4,
             }}
           >
@@ -1091,15 +1101,15 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
-      <div className="absolute inset-0" style={{ background: 'rgba(8,8,16,0.94)' }} onClick={onClose} />
+      <div className="absolute inset-0" style={{ background: 'rgba(238,238,255,0.97)' }} onClick={onClose} />
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-5">
-        <p className="mb-4" style={{ color: '#5A5A7A', fontSize: 12, fontWeight: 600 }}>
+        <p className="mb-4" style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>
           {playing ? 'Previsualizando coreografía...' : 'Preview terminado'}
         </p>
 
         <div
           className="rounded-2xl p-4 mb-4 w-full flex items-center justify-center"
-          style={{ background: '#0E0E1A', border: `1px solid ${currentAnimStep ? currentAnimStep.color + '25' : '#161628'}` }}
+          style={{ background: '#FFFFFF', border: `1px solid ${currentAnimStep ? currentAnimStep.color + '25' : '#C8C8E2'}` }}
         >
           <OttoRobot
             key={playing ? `cmd-${cmdIdx}` : 'idle'}
@@ -1113,7 +1123,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
             <motion.div
               key={cmdIdx}
               className="flex items-center gap-3 px-4 py-2.5 rounded-xl mb-3 w-full"
-              style={{ background: '#111120', border: `1px solid ${currentAnimStep.color}30` }}
+              style={{ background: '#FFFFFF', border: `1px solid ${currentAnimStep.color}30` }}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.15 }}
             >
@@ -1121,28 +1131,28 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
                 className="w-9 h-9 rounded-lg flex items-center justify-center"
                 style={{ background: `${currentAnimStep.color}12`, border: `1px solid ${currentAnimStep.color}25` }}
               >
-                <motion.span style={{ fontSize: 18 }} animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                <motion.span style={{ fontSize: 14 }} animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
                   {currentAnimStep.icon}
                 </motion.span>
               </div>
               <div className="flex-1">
-                <p style={{ color: '#E8E8F0', fontSize: 13, fontWeight: 600 }}>{currentAnimStep.name}</p>
-                <p style={{ color: '#4A4A6A', fontSize: 10 }}>
+                <p style={{ color: '#080830', fontSize: 14, fontWeight: 600 }}>{currentAnimStep.name}</p>
+                <p style={{ color: '#4848A0', fontSize: 14 }}>
                   ~{(getStepEstimatedDuration(currentAnimStep) / 1000).toFixed(1)}s · {currentAnimStep.speed}
                 </p>
               </div>
               <div className="text-right">
                 <p style={{ color: currentAnimStep.color, fontSize: 14, fontWeight: 700 }}>{topIndex + 1}</p>
-                <p style={{ color: '#3A3A5A', fontSize: 10 }}>de {steps.length}</p>
+                <p style={{ color: '#5E5E9C', fontSize: 14 }}>de {steps.length}</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="w-full mb-2 rounded-full overflow-hidden" style={{ height: 3, background: '#161628' }}>
+        <div className="w-full mb-2 rounded-full overflow-hidden" style={{ height: 3, background: '#C8C8E2' }}>
           <motion.div
             className="h-full rounded-full"
-            style={{ background: currentAnimStep ? currentAnimStep.color : '#818CF8', width: `${progressPct}%` }}
+            style={{ background: currentAnimStep ? currentAnimStep.color : '#6366F1', width: `${progressPct}%` }}
           />
         </div>
 
@@ -1154,7 +1164,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
               style={{
                 width: i === topIndex && playing ? 12 : 6,
                 height: 6,
-                background: i === topIndex && playing ? s.color : i < topIndex ? `${s.color}60` : '#1E1E30',
+                background: i === topIndex && playing ? s.color : i < topIndex ? `${s.color}60` : '#B6B6D6',
                 transition: 'all 0.2s',
                 borderRadius: 3,
               }}
@@ -1167,7 +1177,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
             <button
               onClick={() => { setCmdIdx(0); setPlaying(true); }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95"
-              style={{ background: '#1A1A35', border: '1px solid #2E2E55', color: '#C4B5FD', fontSize: 13, fontWeight: 600 }}
+              style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
             >
               <Play size={14} /> Repetir
             </button>
@@ -1176,7 +1186,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
             <button
               onClick={() => { cleanup(); setPlaying(false); }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95"
-              style={{ background: '#160F12', border: '1px solid #2A1520', color: '#F87171', fontSize: 13, fontWeight: 600 }}
+              style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 600 }}
             >
               <X size={14} /> Parar
             </button>
@@ -1184,7 +1194,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
           <button
             onClick={onClose}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: '#111120', border: '1px solid #1C1C30', color: '#6A6A8A', fontSize: 13, fontWeight: 600 }}
+            style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', color: '#303090', fontSize: 14, fontWeight: 600 }}
           >
             Cerrar
           </button>
@@ -1211,11 +1221,11 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
       as="div"
       layout
       onDragEnd={onDragEnd}
-      style={{ borderBottom: '1px solid #111120', listStyle: 'none', overflow: 'hidden' }}
+      style={{ borderBottom: '1px solid #CDCDE8', listStyle: 'none', overflow: 'hidden' }}
       whileDrag={{
         scale: 1.025,
-        backgroundColor: '#141428',
-        boxShadow: '0 8px 28px rgba(0,0,0,0.55)',
+        backgroundColor: '#E0D9FF',
+        boxShadow: '0 8px 28px rgba(100,100,180,0.25)',
         zIndex: 50,
         borderRadius: 8,
       }}
@@ -1226,23 +1236,23 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
         <div
           onPointerDown={(e) => { e.preventDefault(); controls.start(e); }}
           className="cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
-          style={{ color: '#2A2A42', paddingRight: 2 }}
+          style={{ color: '#A0A0CA', paddingRight: 2 }}
         >
           <GripVertical size={13} />
         </div>
-        <span style={{ color: '#3A3A5A', fontSize: 10, fontWeight: 700, width: 18 }}>{index + 1}</span>
+        <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, width: 18 }}>{index + 1}</span>
         <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: `${step.color}0A`, border: `1px solid ${step.color}15` }}>
-          <span style={{ fontSize: 12 }}>{step.isGroup ? '📦' : step.icon}</span>
+          <span style={{ fontSize: 14 }}>{step.isGroup ? '📦' : step.icon}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="truncate" style={{ color: '#B0B0C8', fontSize: 12, fontWeight: 600 }}>{step.name}</p>
+          <p className="truncate" style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>{step.name}</p>
           {step.isGroup && (
-            <p style={{ color: '#8A8AB0', fontSize: 10, marginTop: 2 }}>
+            <p style={{ color: '#222280', fontSize: 14, marginTop: 2 }}>
               {step.children?.length ?? 0} pasos · ×{step.repetitions}
             </p>
           )}
         </div>
-        <span style={{ color: '#3A3A5A', fontSize: 10, flexShrink: 0 }}>
+        <span style={{ color: '#5E5E9C', fontSize: 14, flexShrink: 0 }}>
           {`${(getStepEstimatedDuration(step) / 1000).toFixed(1)}s`}
           {!step.isGroup && step.repetitions > 1 && ` ×${step.repetitions}`}
         </span>
@@ -1250,9 +1260,9 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
         <button
           onClick={(e) => { e.stopPropagation(); onEdit(); pulse(); }}
           className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
-          style={{ background: '#151528', border: '1px solid #1E1E35' }}
+          style={{ background: '#F5F3FF', border: '1px solid #B2B2D2' }}
         >
-          <Pencil size={11} style={{ color: '#818CF8' }} />
+          <Pencil size={11} style={{ color: '#6366F1' }} />
         </button>
       </div>
     </Reorder.Item>
@@ -1267,37 +1277,37 @@ function ActionBar({ steps, onClear, onUndo, onPreview, onSave }: {
   onSave: () => void;
 }) {
   return (
-    <div className="flex gap-1.5">
+    <div className="flex gap-2">
       <button
         onClick={onClear}
         disabled={steps.length === 0}
-        className="px-2.5 py-2.5 rounded-xl cursor-pointer flex items-center gap-1 transition-all active:scale-95"
-        style={{ background: '#111120', border: '1px solid #1C1C30', color: '#F87171', fontSize: 10, fontWeight: 600, opacity: steps.length ? 1 : 0.3 }}
+        className="px-3 py-2.5 rounded-xl cursor-pointer flex items-center gap-1.5 transition-all active:scale-95"
+        style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 700, opacity: steps.length ? 1 : 0.3 }}
       >
-        <Trash2 size={12} /> Borrar
+        <Trash2 size={15} /> Borrar
       </button>
       <button
         onClick={onUndo}
         disabled={steps.length === 0}
-        className="px-2.5 py-2.5 rounded-xl cursor-pointer flex items-center gap-1 transition-all active:scale-95"
-        style={{ background: '#111120', border: '1px solid #1C1C30', color: '#FBBF24', fontSize: 10, fontWeight: 600, opacity: steps.length ? 1 : 0.3 }}
+        className="px-3 py-2.5 rounded-xl cursor-pointer flex items-center gap-1.5 transition-all active:scale-95"
+        style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A', color: '#D97706', fontSize: 14, fontWeight: 700, opacity: steps.length ? 1 : 0.3 }}
       >
-        <Undo2 size={12} /> Undo
+        <Undo2 size={15} /> Undo
       </button>
       <div className="flex-1" />
       <button
         onClick={onPreview}
-        className="px-2.5 py-2.5 rounded-xl cursor-pointer flex items-center gap-1 transition-all active:scale-95"
-        style={{ background: '#111120', border: '1px solid #1E1E40', color: '#818CF8', fontSize: 10, fontWeight: 600, opacity: steps.length ? 1 : 0.3 }}
+        className="px-3 py-2.5 rounded-xl cursor-pointer flex items-center gap-1.5 transition-all active:scale-95"
+        style={{ background: '#EEF2FF', border: '1.5px solid #A5B4FC', color: '#4F46E5', fontSize: 14, fontWeight: 700, opacity: steps.length ? 1 : 0.3 }}
       >
-        <Eye size={12} /> Preview
+        <Eye size={15} /> Preview
       </button>
       <button
         onClick={onSave}
-        className="px-3.5 py-2.5 rounded-xl cursor-pointer flex items-center gap-1 transition-all active:scale-95"
-        style={{ background: '#1A1A35', border: '1px solid #2E2E55', color: '#C4B5FD', fontSize: 10, fontWeight: 600, opacity: steps.length ? 1 : 0.3 }}
+        className="px-4 py-2.5 rounded-xl cursor-pointer flex items-center gap-1.5 transition-all active:scale-95"
+        style={{ background: '#7C3AED', border: '1.5px solid #6D28D9', color: '#FFFFFF', fontSize: 14, fontWeight: 700, opacity: steps.length ? 1 : 0.3 }}
       >
-        <Save size={12} /> Guardar
+        <Save size={15} /> Guardar
       </button>
     </div>
   );
@@ -1401,13 +1411,13 @@ export function ChoreographyScreen() {
   const pickerGroupStep = groupPositionPicker ? steps.find(s => s.id === groupPositionPicker) ?? null : null;
 
   return (
-    <div className="flex flex-col min-h-dvh" style={{ background: '#0B0B14' }}>
+    <div className="flex flex-col min-h-dvh" style={{ background: '#F8F8FF' }}>
 
       <div className="flex-shrink-0 px-4 pt-3 pb-1 md:px-8 md:pt-6">
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="flex items-center gap-2">
-              <h2 style={{ color: '#E8E8F0', fontSize: 18, fontWeight: 800 }}>
+              <h2 style={{ color: '#080830', fontSize: 14, fontWeight: 800 }}>
                 {editingChoreo ? `Editando: ${editingChoreo.name}` : 'Build Your Dance'}
               </h2>
               {editingChoreo && (
@@ -1415,7 +1425,7 @@ export function ChoreographyScreen() {
                   <button
                     onClick={() => setShowNewConfirm(true)}
                     className="flex items-center gap-1 px-2 py-1 rounded-lg cursor-pointer active:scale-95 transition-transform flex-shrink-0"
-                    style={{ background: '#1A1010', border: '1px solid #2A1515', color: '#F87171', fontSize: 10, fontWeight: 600 }}
+                    style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 600 }}
                     title="Empezar una coreografía nueva"
                   >
                     <RotateCcw size={10} /> Nueva
@@ -1424,12 +1434,12 @@ export function ChoreographyScreen() {
                     {showNewConfirm && (
                       <motion.div className="fixed inset-0 z-50 flex items-center justify-center px-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setShowNewConfirm(false)} />
-                        <motion.div className="relative w-full max-w-xs rounded-2xl p-5" style={{ background: '#111120', border: '1px solid #1C1C30' }} initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}>
-                          <h3 className="mb-2" style={{ color: '#E8E8F0', fontSize: 15, fontWeight: 700 }}>¿Empezar desde cero?</h3>
-                          <p className="mb-4" style={{ color: '#4A4A6A', fontSize: 12 }}>Los cambios no guardados se perderán.</p>
+                        <motion.div className="relative w-full max-w-xs rounded-2xl p-5" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }} initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}>
+                          <h3 className="mb-2" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>¿Empezar desde cero?</h3>
+                          <p className="mb-4" style={{ color: '#4848A0', fontSize: 14 }}>Los cambios no guardados se perderán.</p>
                           <div className="flex gap-2">
-                            <button onClick={() => setShowNewConfirm(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid #1E1E35', color: '#5A5A7A', fontSize: 13, fontWeight: 600 }}>Cancelar</button>
-                            <button onClick={() => { clearAll(); navigate('/choreography'); setShowNewConfirm(false); }} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95" style={{ background: '#160F12', border: '1px solid #2A1520', color: '#F87171', fontSize: 13, fontWeight: 600 }}>Empezar nuevo</button>
+                            <button onClick={() => setShowNewConfirm(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}>Cancelar</button>
+                            <button onClick={() => { clearAll(); navigate('/choreography'); setShowNewConfirm(false); }} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 600 }}>Empezar nuevo</button>
                           </div>
                         </motion.div>
                       </motion.div>
@@ -1438,21 +1448,21 @@ export function ChoreographyScreen() {
                 </>
               )}
             </div>
-            <p style={{ color: '#4A4A6A', fontSize: 11 }}>
+            <p style={{ color: '#4848A0', fontSize: 14 }}>
               {steps.length} paso{steps.length !== 1 ? 's' : ''} · {formatMs(totalTime)}
-              {steps.length > 0 && <span style={{ color: '#3A3A5A' }}> · Toca un paso para editar</span>}
+              {steps.length > 0 && <span style={{ color: '#5E5E9C' }}> · Toca un paso para editar</span>}
             </p>
           </div>
-          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #1C1C30' }}>
+          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #BDBDDB' }}>
             {(['robot', 'grid'] as const).map(v => (
               <button
                 key={v}
                 onClick={() => { setViewMode(v); pulse(); }}
                 className="px-3 py-1.5 capitalize cursor-pointer transition-all active:scale-95"
                 style={{
-                  background: viewMode === v ? '#1A1A30' : 'transparent',
-                  color: viewMode === v ? '#C4B5FD' : '#3A3A5A',
-                  fontSize: 11, fontWeight: 600,
+                  background: viewMode === v ? '#EDE9FE' : 'transparent',
+                  color: viewMode === v ? '#7C3AED' : '#5E5E9C',
+                  fontSize: 14, fontWeight: 600,
                 }}
               >
                 {v === 'robot' ? '🤖 Robot' : '⊞ Grid'}
@@ -1469,7 +1479,7 @@ export function ChoreographyScreen() {
           {steps.length === 0 ? (
             <div
               className="flex items-center justify-center w-full py-4 rounded-xl"
-              style={{ background: '#0E0E1A', border: '1px dashed #1A1A2A', color: '#2E2E48', fontSize: 12 }}
+              style={{ background: '#FFFFFF', border: '1px dashed #A6A6D4', color: '#5E5E9C', fontSize: 14 }}
             >
               <span className="md:hidden">{viewMode === 'robot' ? '👆 Toca el cuerpo de Otto para agregar' : '👆 Toca una tarjeta para agregar'}</span>
               <span className="hidden md:inline">{viewMode === 'robot' ? '🖱 Haz click en Otto para agregar movimientos' : '🖱 Haz click en una tarjeta para agregar'}</span>
@@ -1479,7 +1489,7 @@ export function ChoreographyScreen() {
               key={step.id}
               className="flex-shrink-0 flex flex-col items-center justify-center gap-0.5 rounded-xl cursor-pointer relative"
               style={{
-                background: editingStep?.id === step.id ? `${step.color}18` : '#0E0E1A',
+                background: editingStep?.id === step.id ? `${step.color}18` : '#FFFFFF',
                 border: `2px solid ${
                   editingStep?.id === step.id
                     ? step.color + '70'
@@ -1487,7 +1497,7 @@ export function ChoreographyScreen() {
                       ? step.color
                       : lastAdded === step.id
                         ? step.color
-                        : '#1C1C2E'
+                        : '#C0C0DC'
                 }`,
                 minWidth: 60, height: 64, padding: '0 8px',
               }}
@@ -1510,23 +1520,23 @@ export function ChoreographyScreen() {
                 className="absolute cursor-pointer"
                 style={{
                   right: 5, top: 5, width: 16, height: 16, borderRadius: 4,
-                  border: `1.5px solid ${selectedIds.includes(step.id) ? step.color : '#2A2A3A'}`,
+                  border: `1.5px solid ${selectedIds.includes(step.id) ? step.color : '#A2A2CC'}`,
                   background: selectedIds.includes(step.id) ? step.color : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
                 {selectedIds.includes(step.id) && (
-                  <span style={{ color: '#0B0B14', fontSize: 9, fontWeight: 900, lineHeight: 1 }}>✓</span>
+                  <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, lineHeight: 1 }}>✓</span>
                 )}
               </button>
               <span style={{ fontSize: 20, lineHeight: 1 }}>{step.isGroup ? '📦' : step.icon}</span>
-              <span style={{ color: '#4A4A6A', fontSize: 9, fontWeight: 700 }}>{i + 1}</span>
+              <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 700 }}>{i + 1}</span>
               {step.isGroup ? (
-                <span style={{ color: step.color, fontSize: 8, fontWeight: 700 }}>
+                <span style={{ color: step.color, fontSize: 14, fontWeight: 700 }}>
                   {step.children?.length ?? 0}p
                 </span>
               ) : step.repetitions > 1 ? (
-                <span style={{ color: step.color, fontSize: 8, fontWeight: 700 }}>×{step.repetitions}</span>
+                <span style={{ color: step.color, fontSize: 14, fontWeight: 700 }}>×{step.repetitions}</span>
               ) : null}
             </motion.button>
           ))}
@@ -1538,14 +1548,14 @@ export function ChoreographyScreen() {
               className="flex items-center gap-2 py-2"
               initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             >
-              <span style={{ color: '#C4B5FD', fontSize: 11, fontWeight: 600 }}>
+              <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 600 }}>
                 {selectedIds.length} seleccionado{selectedIds.length > 1 ? 's' : ''}
               </span>
               {selectedIds.length >= 2 && (
                 <button
                   onClick={() => setShowGroupBuilder(true)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg cursor-pointer active:scale-95 transition-transform"
-                  style={{ background: '#1A1A35', border: '1px solid #2E2E55', color: '#C4B5FD', fontSize: 11, fontWeight: 600 }}
+                  style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
                 >
                   <Package size={11} /> Agrupar
                 </button>
@@ -1553,7 +1563,7 @@ export function ChoreographyScreen() {
               <button
                 onClick={() => setSelectedIds([])}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-95"
-                style={{ background: 'transparent', border: '1px solid #1C1C30', color: '#5A5A7A', fontSize: 11 }}
+                style={{ background: 'transparent', border: '1px solid #BDBDDB', color: '#383898', fontSize: 14 }}
               >
                 <X size={11} /> Limpiar
               </button>
@@ -1573,9 +1583,9 @@ export function ChoreographyScreen() {
             {/* Izquierda: robot */}
             <div
               className="p-3 rounded-2xl mb-3 md:mb-0 md:flex md:flex-col md:items-center md:justify-center md:overflow-hidden"
-              style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+              style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
             >
-              <p className="text-center mb-1" style={{ color: '#4A4A6A', fontSize: 11 }}>
+              <p className="text-center mb-1" style={{ color: '#4848A0', fontSize: 14 }}>
                 <span className="md:hidden">👆 Toca</span>
                 <span className="hidden md:inline">🖱 Haz click en</span>
                 {' '}una parte de Otto para ver los movimientos
@@ -1585,19 +1595,19 @@ export function ChoreographyScreen() {
 
             {/* Derecha: lista de pasos */}
             {steps.length === 0 ? (
-              <div className="hidden md:flex flex-col items-center justify-center rounded-xl md:h-full" style={{ background: '#0E0E1A', border: '1px dashed #1A1A2A' }}>
-                <span style={{ color: '#2E2E48', fontSize: 12 }}>Toca el robot para agregar pasos</span>
+              <div className="hidden md:flex flex-col items-center justify-center rounded-xl md:h-full" style={{ background: '#FFFFFF', border: '1px dashed #EBEBF8' }}>
+                <span style={{ color: '#7878A8', fontSize: 14 }}>Toca el robot para agregar pasos</span>
               </div>
             ) : (
-              <div className="rounded-xl overflow-hidden md:flex md:flex-col md:h-full" style={{ background: '#0E0E1A', border: '1px solid #161628' }}>
+              <div className="rounded-xl overflow-hidden md:flex md:flex-col md:h-full" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
                 <div
                   className="flex items-center justify-between px-3 py-2 flex-shrink-0"
-                  style={{ borderBottom: '1px solid #161628' }}
+                  style={{ borderBottom: '1px solid #C8C8E2' }}
                 >
-                  <span style={{ color: '#4A4A6A', fontSize: 10, fontWeight: 700, letterSpacing: '0.5px' }}>
+                  <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>
                     TODOS LOS PASOS
                   </span>
-                  <span style={{ color: '#3A3A5A', fontSize: 10 }}>{steps.length} total</span>
+                  <span style={{ color: '#5E5E9C', fontSize: 14 }}>{steps.length} total</span>
                 </div>
                 <Reorder.Group
                   axis="y"
@@ -1647,10 +1657,10 @@ export function ChoreographyScreen() {
                   onClick={() => { setActiveCategory(c.key); pulse(); }}
                   className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer transition-all active:scale-95"
                   style={{
-                    background: activeCategory === c.key ? '#1A1A30' : 'transparent',
-                    color: activeCategory === c.key ? '#C4B5FD' : '#3A3A5A',
-                    border: activeCategory === c.key ? '1px solid #252545' : '1px solid #161628',
-                    fontSize: 11, fontWeight: 600,
+                    background: activeCategory === c.key ? '#EDE9FE' : 'transparent',
+                    color: activeCategory === c.key ? '#7C3AED' : '#5E5E9C',
+                    border: activeCategory === c.key ? '1px solid #A4A4D2' : '1px solid #C8C8E2',
+                    fontSize: 14, fontWeight: 600,
                   }}
                 >{c.label}</button>
               ))}
@@ -1661,7 +1671,7 @@ export function ChoreographyScreen() {
                 <motion.button
                   key={move.command}
                   className="p-2.5 rounded-xl cursor-pointer text-left"
-                  style={{ background: '#0E0E1A', border: '1px solid #161628' }}
+                  style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
                   whileTap={{ scale: 0.95, borderColor: move.color + '40' }}
                   onClick={() => handleAddMove(move, durations[move.command] || 1000)}
                 >
@@ -1673,12 +1683,12 @@ export function ChoreographyScreen() {
                       <span style={{ fontSize: 14, color: move.color }}>{move.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="truncate" style={{ color: '#B0B0C8', fontSize: 11, fontWeight: 600 }}>
+                      <p className="truncate" style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>
                         {move.name}
                       </p>
                     </div>
                   </div>
-                  <p className="truncate mb-1.5 pl-10" style={{ color: '#3A3A5A', fontSize: 9 }}>
+                  <p className="truncate mb-1.5 pl-10" style={{ color: '#5E5E9C', fontSize: 14 }}>
                     {MOVE_DESCRIPTIONS[move.command]}
                   </p>
                   <div className="pl-10">
@@ -1697,7 +1707,7 @@ export function ChoreographyScreen() {
 
       {/* Barra de acciones — fija en mobile siempre, fija en desktop solo en grid mode */}
       <div className={`fixed left-0 right-0 z-40 md:left-[72px] bottom-[calc(6rem+env(safe-area-inset-bottom))] md:bottom-0 ${viewMode === 'robot' ? 'md:hidden' : ''}`}>
-        <div className="px-4 pt-5 pb-2 md:px-8" style={{ background: 'linear-gradient(to top, #0B0B14 65%, transparent)' }}>
+        <div className="px-4 pt-5 pb-2 md:px-8" style={{ background: 'linear-gradient(to top, #F8F8FF 65%, transparent)' }}>
           <ActionBar
             steps={steps}
             onClear={() => { clearAll(); setSelectedIds([]); pulse(); toast('Pasos borrados', { icon: '🗑️' }); }}

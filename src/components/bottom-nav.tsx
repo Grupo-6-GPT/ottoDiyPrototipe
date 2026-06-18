@@ -23,8 +23,8 @@ export function BottomNav() {
   return (
     <>
       {/* Mobile: bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]" style={{ background: '#0B0B14' }}>
-        <div className="flex justify-around items-center h-14 rounded-2xl my-1.5 px-1" style={{ background: '#141422', border: '1px solid #1E1E30' }}>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]" style={{ background: '#F8F8FF', boxShadow: '0 -1px 0 #BDBDDB' }}>
+        <div className="flex justify-around items-center h-14 rounded-2xl my-1.5 px-1" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}>
           {tabs.map(tab => {
             const active = isActive(tab.path);
             const Icon = tab.icon;
@@ -38,12 +38,12 @@ export function BottomNav() {
                   <motion.div
                     layoutId="navPillBottom"
                     className="absolute inset-0 rounded-xl"
-                    style={{ background: '#1E1E33', border: '1px solid #2A2A44' }}
+                    style={{ background: '#E0D9FF', border: '1px solid #9D87F5' }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
-                <Icon size={18} className="relative z-10" style={{ color: active ? '#C4B5FD' : '#4A4A6A' }} />
-                <span className="relative z-10" style={{ color: active ? '#C4B5FD' : '#4A4A6A', fontSize: 10, fontWeight: 500 }}>{tab.label}</span>
+                <Icon size={18} className="relative z-10" style={{ color: active ? '#7C3AED' : '#5E5E9C' }} />
+                <span className="relative z-10" style={{ color: active ? '#7C3AED' : '#5E5E9C', fontSize: 14, fontWeight: 500 }}>{tab.label}</span>
               </button>
             );
           })}
@@ -53,10 +53,10 @@ export function BottomNav() {
       {/* Desktop/tablet: left sidebar */}
       <nav
         className="hidden md:flex flex-col fixed left-0 top-0 h-full w-[72px] z-50 py-4 px-2 gap-1"
-        style={{ background: '#0D0D1A', borderRight: '1px solid #1E1E30' }}
+        style={{ background: '#FFFFFF', borderRight: '1px solid #BDBDDB', boxShadow: '2px 0 8px rgba(100,100,150,0.06)' }}
       >
         <div className="flex items-center justify-center h-10 mb-4">
-          <span style={{ color: '#C4B5FD', fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>Otto</span>
+          <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>Otto</span>
         </div>
         {tabs.map(tab => {
           const active = isActive(tab.path);
@@ -71,12 +71,12 @@ export function BottomNav() {
                 <motion.div
                   layoutId="navPillSide"
                   className="absolute inset-0 rounded-xl"
-                  style={{ background: '#1E1E33', border: '1px solid #2A2A44' }}
+                  style={{ background: '#E0D9FF', border: '1px solid #9D87F5' }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-              <Icon size={20} className="relative z-10" style={{ color: active ? '#C4B5FD' : '#4A4A6A' }} />
-              <span className="relative z-10" style={{ color: active ? '#C4B5FD' : '#4A4A6A', fontSize: 10, fontWeight: 500 }}>{tab.label}</span>
+              <Icon size={20} className="relative z-10" style={{ color: active ? '#7C3AED' : '#5E5E9C' }} />
+              <span className="relative z-10" style={{ color: active ? '#7C3AED' : '#5E5E9C', fontSize: 14, fontWeight: 500 }}>{tab.label}</span>
             </button>
           );
         })}
