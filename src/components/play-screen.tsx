@@ -16,7 +16,7 @@ const fmt = (ms: number) => {
 
 export function PlayScreen() {
   const { steps, meta } = useSteps();
-  const { connected, sendSequence } = useConnection();
+  const { connected, sendSequence, sendCommand } = useConnection();
   const navigate = useNavigate();
 
   const [robotSize, setRobotSize] = useState(() =>
@@ -159,7 +159,8 @@ export function PlayScreen() {
     setElapsed(0);
     if (youtubePlayerRef.current) youtubePlayerRef.current.src = '';
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
-  }, [stopTimers]);
+    if (connected) sendCommand('FREEZE');
+  }, [stopTimers, connected, sendCommand]);
 
   const isDancing  = playState === 'dancing';
   const isFinished = playState === 'finished';
@@ -175,7 +176,7 @@ export function PlayScreen() {
       style={{
         background: isDancing ? '#FEF2F2' : isFinished ? '#ECFDF5' : '#E0D9FF',
         color: isDancing ? '#DC2626' : isFinished ? '#059669' : '#7C3AED',
-        border: isDancing ? '1px solid #FECACA' : isFinished ? '1px solid #6EE7B7' : '1px solid #9494D4',
+        border: isDancing ? '1px solid #FECACA' : isFinished ? '1px solid #6EE7B7' : '1px solid var(--app-border-accent)',
         fontSize: 16, fontWeight: 700,
         opacity: (!noSteps && (connected || isDancing)) ? 1 : 0.3,
         pointerEvents: (!noSteps && (connected || isDancing)) ? 'auto' : 'none',
@@ -191,7 +192,7 @@ export function PlayScreen() {
   );
 
   return (
-    <div className="flex flex-col min-h-dvh md:h-dvh md:overflow-hidden" style={{ background: '#F8F8FF' }}>
+    <div className="flex flex-col min-h-dvh md:h-dvh md:overflow-hidden" style={{ background: 'var(--app-bg)' }}>
 
       {/* Audio element para URLs directas (no YouTube) */}
       {useAudioElement && (
@@ -206,10 +207,10 @@ export function PlayScreen() {
 
       {/* Header */}
       <div className="flex-shrink-0 px-5 pt-5 pb-2 text-center md:text-left md:px-8 md:pt-6">
-        <h2 className="mb-0.5" style={{ color: '#080830', fontSize: 20, fontWeight: 800 }}>
+        <h2 className="mb-0.5" style={{ color: 'var(--app-text-primary)', fontSize: 20, fontWeight: 800 }}>
           {isDancing ? 'Bailando…' : isFinished ? '¡Hecho!' : 'Play'}
         </h2>
-        <p style={{ color: '#4848A0', fontSize: 14 }}>
+        <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
           {noSteps
             ? 'Sin pasos — construye una coreografía primero'
             : hasSong
@@ -229,7 +230,7 @@ export function PlayScreen() {
             <motion.div
               className="flex items-center justify-center rounded-2xl overflow-hidden w-full"
               style={{
-                background: '#FFFFFF',
+                background: 'var(--app-surface)',
                 border: isDancing ? '1px solid #6366F133' : '1px solid #C8C8E2',
                 height: robotSize >= 320 ? '100%' : 195,
                 minHeight: robotSize >= 320 ? 0 : 195,
@@ -249,8 +250,8 @@ export function PlayScreen() {
                 className="w-full rounded-xl"
                 height="160"
                 style={{
-                  background: '#FFFFFF',
-                  border: '1px solid #C8C8E2',
+                  background: 'var(--app-surface)',
+                  border: '1px solid var(--app-border)',
                   display: isDancing ? 'block' : 'none',
                 }}
                 frameBorder="0"
@@ -259,15 +260,15 @@ export function PlayScreen() {
                 title="YouTube music player"
               />
               {!isDancing && (
-                <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#E0D9FF', border: '1px solid #9494D4' }}>
+                <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)' }}>
                     <Music2 size={13} style={{ color: '#6366F1' }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>
+                    <p style={{ color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>
                       Música vinculada · loop en {fmt(songDurationMs || choreoDuration)}
                     </p>
-                    <p className="truncate" style={{ color: '#4848A0', fontSize: 14 }}>{meta.youtubeUrl}</p>
+                    <p className="truncate" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>{meta.youtubeUrl}</p>
                   </div>
                 </div>
               )}
@@ -277,15 +278,15 @@ export function PlayScreen() {
           {/* Chip de audio directo */}
           {useAudioElement && !isDancing && (
             <div className="flex-shrink-0 px-5 py-2 md:px-0 md:py-0">
-              <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#E0D9FF', border: '1px solid #9494D4' }}>
+              <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)' }}>
                   <Music2 size={13} style={{ color: '#6366F1' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>
+                  <p style={{ color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>
                     Audio directo{audioDuration > 0 ? ` · ${fmt(audioDuration * 1000)}` : ''}
                   </p>
-                  <p className="truncate" style={{ color: '#4848A0', fontSize: 14 }}>{meta.audioUrl}</p>
+                  <p className="truncate" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>{meta.audioUrl}</p>
                 </div>
               </div>
             </div>
@@ -298,7 +299,7 @@ export function PlayScreen() {
                 <motion.div
                   key={`${currentStep}-${currentCmd}`}
                   className="flex items-center gap-2 py-2 px-4 rounded-xl w-fit"
-                  style={{ background: '#FFFFFF', border: `1px solid ${currentStepData.color}30` }}
+                  style={{ background: 'var(--app-surface)', border: `1px solid ${currentStepData.color}30` }}
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.15 }}
                 >
@@ -306,8 +307,8 @@ export function PlayScreen() {
                     {currentStepData.icon}
                   </motion.span>
                   <span style={{ color: currentStepData.color, fontSize: 14, fontWeight: 600 }}>{currentStepData.name}</span>
-                  <div className="w-px h-3.5" style={{ background: '#B6B6D6' }} />
-                  <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 600 }}>{currentStep + 1}/{steps.length}</span>
+                  <div className="w-px h-3.5" style={{ background: 'var(--app-border-accent)' }} />
+                  <span style={{ color: 'var(--app-text-secondary)', fontSize: 14, fontWeight: 600 }}>{currentStep + 1}/{steps.length}</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -329,14 +330,14 @@ export function PlayScreen() {
           {(isDancing || isFinished) && (
             <div className="flex-shrink-0 px-5 mb-3 md:px-0 md:mb-2">
               <div className="flex justify-between mb-1">
-                <span style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>
+                <span style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>
                   {hasSong ? (isFinished ? 'Canción completada' : 'Progreso canción') : (isFinished ? 'Completado' : 'Progreso real')}
                 </span>
                 <span style={{ color: '#6366F1', fontSize: 14, fontWeight: 700 }}>
                   {fmt(elapsed)} / {fmt(totalDisplayMs)}
                 </span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#C8C8E2' }}>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--app-border)' }}>
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: isFinished ? '#059669' : '#6366F1' }}
@@ -364,7 +365,7 @@ export function PlayScreen() {
                 ))}
               </div>
               {hasSong && isDancing && (
-                <p className="text-center mt-1.5" style={{ color: '#5E5E9C', fontSize: 14 }}>
+                <p className="text-center mt-1.5" style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                   La coreografía se repite en loop hasta que termine la canción
                 </p>
               )}
@@ -375,7 +376,7 @@ export function PlayScreen() {
           <div className="hidden md:block flex-shrink-0 pt-2">
             {playButton}
             {!noSteps && !isDancing && connected && (
-              <p className="text-center mt-2" style={{ color: '#7878A8', fontSize: 14 }}>
+              <p className="text-center mt-2" style={{ color: 'var(--app-text-faint)', fontSize: 14 }}>
                 {hasSong ? 'La coreografía se repetirá en loop durante toda la canción' : 'Cada comando se envía cuando el robot termina el anterior'}
               </p>
             )}
@@ -385,24 +386,24 @@ export function PlayScreen() {
         {/* Derecha: lista de pasos */}
         <div className="flex-1 px-5 pb-4 md:px-0 md:pb-0 md:flex md:flex-col md:min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
           {noSteps ? (
-            <div className="flex flex-col items-center justify-center py-10 md:flex-1 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}>
+            <div className="flex flex-col items-center justify-center py-10 md:flex-1 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)' }}>
                 <Layers size={20} style={{ color: '#B2B2D2' }} />
               </div>
-              <p style={{ color: '#7878A8', fontSize: 14, fontWeight: 600 }}>Sin pasos para reproducir</p>
+              <p style={{ color: 'var(--app-text-faint)', fontSize: 14, fontWeight: 600 }}>Sin pasos para reproducir</p>
               <button
                 onClick={() => navigate('/choreography')}
                 className="mt-3 px-4 py-2 rounded-xl cursor-pointer active:scale-95 transition-transform flex items-center gap-1"
-                style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
+                style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
               >
                 Ir al Constructor <ChevronRight size={13} />
               </button>
             </div>
           ) : (
-            <div className="rounded-xl overflow-hidden md:flex md:flex-col md:flex-1 md:min-h-0" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+            <div className="rounded-xl overflow-hidden md:flex md:flex-col md:flex-1 md:min-h-0" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
               <div className="px-3 py-1.5 flex items-center justify-between flex-shrink-0" style={{ borderBottom: '1px solid #CDCDE8' }}>
-                <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>SECUENCIA</span>
-                <span style={{ color: '#5E5E9C', fontSize: 14 }}>
+                <span style={{ color: 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>SECUENCIA</span>
+                <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                   {steps.length} paso{steps.length !== 1 ? 's' : ''}
                   {hasSong && ` · ${Math.ceil(songDurationMs / choreoDuration)}× loops aprox`}
                 </span>
@@ -416,12 +417,12 @@ export function PlayScreen() {
                     <motion.div
                       key={step.id}
                       className="flex items-center gap-2.5 px-3 py-2.5"
-                      style={{ borderBottom: '1px solid #FFFFFF', background: isActive ? `${step.color}0A` : 'transparent' }}
+                      style={{ borderBottom: '1px solid var(--app-border-subtle)', background: isActive ? `${step.color}0A` : 'transparent' }}
                       animate={isActive ? { x: [0, 2, 0] } : {}}
                       transition={{ duration: 0.4, repeat: isActive ? Infinity : 0 }}
                     >
                       <motion.span
-                        style={{ color: isActive ? step.color : isDone ? '#9898B8' : '#5E5E9C', fontSize: 14, fontWeight: 700, width: 18 }}
+                        style={{ color: isActive ? step.color : isDone ? '#9898B8' : 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, width: 18 }}
                         animate={isActive ? { scale: [1, 1.2, 1] } : {}}
                         transition={{ duration: 0.5, repeat: Infinity }}
                       >{i + 1}</motion.span>
@@ -437,8 +438,8 @@ export function PlayScreen() {
                         }}
                       >{step.name}</span>
                       <div className="text-right" style={{ minWidth: 60 }}>
-                        <span style={{ color: isActive ? step.color : '#5E5E9C', fontSize: 14 }}>{fmt(stepDur)}</span>
-                        {step.repetitions > 1 && <span style={{ color: '#5E5E9C', fontSize: 14 }}> ×{step.repetitions}</span>}
+                        <span style={{ color: isActive ? step.color : 'var(--app-text-muted)', fontSize: 14 }}>{fmt(stepDur)}</span>
+                        {step.repetitions > 1 && <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}> ×{step.repetitions}</span>}
                       </div>
                     </motion.div>
                   );
@@ -453,7 +454,7 @@ export function PlayScreen() {
       <div className="md:hidden flex-shrink-0 px-5 pb-[5.5rem] pt-2">
         {playButton}
         {!noSteps && !isDancing && connected && (
-          <p className="text-center mt-2" style={{ color: '#7878A8', fontSize: 14 }}>
+          <p className="text-center mt-2" style={{ color: 'var(--app-text-faint)', fontSize: 14 }}>
             {hasSong ? 'La coreografía se repetirá en loop durante toda la canción' : 'Cada comando se envía cuando el robot termina el anterior'}
           </p>
         )}

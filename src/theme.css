@@ -39,43 +39,99 @@
   --sidebar-accent-foreground: #7C3AED;
   --sidebar-border: #BDBDDB;
   --sidebar-ring: #9D87F5;
+
+  /* App-specific color tokens — light mode */
+  --app-bg:               #F8F8FF;
+  --app-surface:          #FFFFFF;
+  --app-surface-hover:    #F5F3FF;
+  --app-accent-bg:        #E0D9FF;
+  --app-accent-soft:      #EDE9FE;
+  --app-accent-tint:      #F0EEFF;
+  --app-text-primary:     #080830;
+  --app-text-heading:     #18186A;
+  --app-text-deep:        #101048;
+  --app-text-secondary:   #4848A0;
+  --app-text-accent:      #383898;
+  --app-text-strong:      #222280;
+  --app-text-muted:       #5E5E9C;
+  --app-text-faint:       #7878A8;
+  --app-text-ghost:       #A6A6D4;
+  --app-text-step:        #1E1E78;
+  --app-border:           #C8C8E2;
+  --app-border-strong:    #BDBDDB;
+  --app-border-subtle:    #CDCDE8;
+  --app-border-muted:     #B2B2D2;
+  --app-border-accent:    #9494D4;
+  --app-border-alt:       #A4A4D2;
+  --app-border-light:     #C6C6E0;
+  --app-nav-bg:           #FFFFFF;
+  --app-preview-overlay:  rgba(238,238,255,0.97);
 }
 
 .dark {
-  --background: #F8F8FF;
-  --foreground: #080830;
-  --card: #ffffff;
-  --card-foreground: #080830;
-  --popover: #ffffff;
-  --popover-foreground: #080830;
+  --background: #0D0D1A;
+  --foreground: #E8E8F0;
+  --card: #111120;
+  --card-foreground: #E8E8F0;
+  --popover: #111120;
+  --popover-foreground: #E8E8F0;
   --primary: #7C3AED;
   --primary-foreground: #ffffff;
-  --secondary: #E0D9FF;
-  --secondary-foreground: #4848A0;
-  --muted: #EDE9FE;
-  --muted-foreground: #5E5E9C;
-  --accent: #E0D9FF;
-  --accent-foreground: #7C3AED;
+  --secondary: #2D1B69;
+  --secondary-foreground: #C0C0E8;
+  --muted: #1E1248;
+  --muted-foreground: #7070A8;
+  --accent: #2D1B69;
+  --accent-foreground: #C0A8FF;
   --destructive: #DC2626;
   --destructive-foreground: #ffffff;
-  --border: #C8C8E2;
+  --border: #1E1E32;
   --input: transparent;
-  --ring: #9D87F5;
+  --input-background: #111120;
+  --switch-background: #3A3A6A;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
+  --ring: #9D87F5;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #ffffff;
-  --sidebar-foreground: #080830;
+  --sidebar: #0A0A18;
+  --sidebar-foreground: #E8E8F0;
   --sidebar-primary: #7C3AED;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #E0D9FF;
-  --sidebar-accent-foreground: #7C3AED;
-  --sidebar-border: #BDBDDB;
+  --sidebar-accent: #2D1B69;
+  --sidebar-accent-foreground: #C0A8FF;
+  --sidebar-border: #1E1E32;
   --sidebar-ring: #9D87F5;
+
+  /* App-specific color tokens — dark mode */
+  --app-bg:               #0D0D1A;
+  --app-surface:          #111120;
+  --app-surface-hover:    #1A1030;
+  --app-accent-bg:        #2D1B69;
+  --app-accent-soft:      #221060;
+  --app-accent-tint:      #180E44;
+  --app-text-primary:     #E8E8F0;
+  --app-text-heading:     #C0C0E8;
+  --app-text-deep:        #D0D0F0;
+  --app-text-secondary:   #9898C8;
+  --app-text-accent:      #8888C0;
+  --app-text-strong:      #A0A0D8;
+  --app-text-muted:       #7070A8;
+  --app-text-faint:       #585890;
+  --app-text-ghost:       #404070;
+  --app-text-step:        #A0A0D0;
+  --app-border:           #1E1E32;
+  --app-border-strong:    #28283C;
+  --app-border-subtle:    #1A1A2E;
+  --app-border-muted:     #222238;
+  --app-border-accent:    #3D3D7A;
+  --app-border-alt:       #303060;
+  --app-border-light:     #1C1C30;
+  --app-nav-bg:           #0A0A18;
+  --app-preview-overlay:  rgba(8,8,20,0.97);
 }
 
 @theme inline {
@@ -127,11 +183,6 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
 
   html {
     font-size: var(--font-size);

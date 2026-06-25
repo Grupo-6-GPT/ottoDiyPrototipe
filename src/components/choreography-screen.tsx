@@ -115,30 +115,6 @@ const MOVE_DESCRIPTIONS: Record<string, string> = {
   PAUSE: 'Otto espera antes del siguiente paso',
 };
 
-function DurationPicker({
-  value, onChange, compact,
-}: { value: number; onChange: (v: number) => void; compact?: boolean }) {
-  const opts = [250, 500, 1000, 1500, 2000];
-  const labels = ['¼s', '½s', '1s', '1½s', '2s'];
-  return (
-    <div className="flex gap-1">
-      {opts.map((o, i) => (
-        <button
-          key={o}
-          onClick={(e) => { e.stopPropagation(); onChange(o); pulse(); }}
-          className="rounded cursor-pointer transition-all active:scale-90"
-          style={{
-            padding: compact ? '1px 5px' : '2px 6px',
-            fontSize: compact ? 9 : 10, fontWeight: 600,
-            background: value === o ? '#E0D9FF' : 'transparent',
-            color: value === o ? '#7C3AED' : '#5E5E9C',
-            border: value === o ? '1px solid #9696D6' : '1px solid transparent',
-          }}
-        >{labels[i]}</button>
-      ))}
-    </div>
-  );
-}
 
 function MiniSlider({
   label, value, min, max, step, unit, color, onChange,
@@ -149,10 +125,10 @@ function MiniSlider({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
-        <span style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>{label}</span>
+        <span style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>{label}</span>
         <span style={{ color, fontSize: 14, fontWeight: 700 }}>{value}{unit}</span>
       </div>
-      <div className="px-1 py-2 rounded-xl" style={{ background: '#F0EEFF' }}>
+      <div className="px-1 py-2 rounded-xl" style={{ background: 'var(--app-accent-tint)' }}>
         <Slider value={[value]} min={min} max={max} step={step}
           onValueChange={([next]) => onChange(next)} className="w-full" />
       </div>
@@ -196,11 +172,11 @@ function PositionPickerSheet({
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', borderBottom: 'none' }}
         initial={{ y: 320 }} animate={{ y: 0 }} exit={{ y: 320 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: 'var(--app-text-ghost)' }} />
         <div className="px-5 pb-10 overflow-y-auto" style={{ maxHeight: '75vh', WebkitOverflowScrolling: 'touch' }}>
           <div className="flex items-center gap-3 mb-4">
             <div
@@ -210,13 +186,13 @@ function PositionPickerSheet({
               <span style={{ fontSize: 14 }}>{icon}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>{label}</h3>
-              <p style={{ color: '#4848A0', fontSize: 14 }}>Elige dónde insertarlo</p>
+              <h3 style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>{label}</h3>
+              <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Elige dónde insertarlo</p>
             </div>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#EDE9FE' }}
+              style={{ background: 'var(--app-accent-soft)' }}
             >
               <X size={14} style={{ color: '#303090' }} />
             </button>
@@ -232,9 +208,9 @@ function PositionPickerSheet({
               <div key={s.id}>
                 <div
                   className="flex items-center gap-2.5 px-3 py-2 my-0.5 rounded-xl"
-                  style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+                  style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
                 >
-                  <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, minWidth: 18 }}>
+                  <span style={{ color: 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, minWidth: 18 }}>
                     {i + 1}
                   </span>
                   <div
@@ -243,16 +219,16 @@ function PositionPickerSheet({
                   >
                     <span style={{ fontSize: 14 }}>{s.isGroup ? '📦' : s.icon}</span>
                   </div>
-                  <p className="truncate" style={{ color: '#1E1E78', fontSize: 14, fontWeight: 600, flex: 1 }}>
+                  <p className="truncate" style={{ color: 'var(--app-text-step)', fontSize: 14, fontWeight: 600, flex: 1 }}>
                     {s.name}
                   </p>
                   {s.isGroup && (
-                    <span style={{ color: '#383898', fontSize: 14 }}>
+                    <span style={{ color: 'var(--app-text-accent)', fontSize: 14 }}>
                       {s.children?.length ?? 0} pasos
                     </span>
                   )}
                   {!s.isGroup && s.repetitions > 1 && (
-                    <span style={{ color: '#383898', fontSize: 14 }}>×{s.repetitions}</span>
+                    <span style={{ color: 'var(--app-text-accent)', fontSize: 14 }}>×{s.repetitions}</span>
                   )}
                 </div>
                 <InsertSlot
@@ -325,23 +301,23 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', borderBottom: 'none' }}
         initial={{ y: 320 }} animate={{ y: 0 }} exit={{ y: 320 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: 'var(--app-text-ghost)' }} />
         <div className="px-5 pb-10 overflow-y-auto" style={{ maxHeight: '75vh', WebkitOverflowScrolling: 'touch' }}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: '#EDE9FE', border: '1px solid #A4A4D2' }}
+                style={{ background: 'var(--app-accent-soft)', border: '1px solid var(--app-border-alt)' }}
               >
                 <Package size={18} style={{ color: '#7C3AED' }} />
               </div>
               <div>
-                <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>Crear grupo</h3>
-                <p style={{ color: '#4848A0', fontSize: 14 }}>
+                <h3 style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>Crear grupo</h3>
+                <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
                   {selectedSteps.length} pasos seleccionados
                 </p>
               </div>
@@ -349,7 +325,7 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#EDE9FE' }}
+              style={{ background: 'var(--app-accent-soft)' }}
             >
               <X size={14} style={{ color: '#303090' }} />
             </button>
@@ -357,7 +333,7 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
 
           <div
             className="flex gap-1.5 flex-wrap mb-4 p-2.5 rounded-xl"
-            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
           >
             {selectedSteps.map(s => (
               <div
@@ -371,7 +347,7 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             ))}
           </div>
 
-          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+          <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             Nombre del grupo
           </p>
           <input
@@ -380,13 +356,13 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             placeholder="Ej: Intro, Coro, Final..."
             className="w-full px-3.5 py-3 rounded-xl mb-4 outline-none transition-all"
             style={{
-              background: '#FFFFFF',
+              background: 'var(--app-surface)',
               border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`,
-              color: '#080830', fontSize: 14,
+              color: 'var(--app-text-primary)', fontSize: 14,
             }}
           />
 
-          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+          <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
             Repeticiones
           </p>
           <div className="flex gap-1.5 mb-5 flex-wrap">
@@ -398,7 +374,7 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
                 style={{
                   background: reps === r ? '#EDE9FE' : 'transparent',
                   color: reps === r ? '#7C3AED' : '#5E5E9C',
-                  border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                  border: reps === r ? '1px solid var(--app-border-alt)' : '1px solid var(--app-border-light)',
                   fontSize: 14, fontWeight: 700,
                 }}
               >{r}×</button>
@@ -407,9 +383,9 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
 
           <div
             className="flex items-center justify-between px-3 py-2 rounded-xl mb-4"
-            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
           >
-            <span style={{ color: '#4848A0', fontSize: 14 }}>Duración estimada</span>
+            <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Duración estimada</span>
             <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700 }}>
               {(selectedSteps.reduce((a, s) => a + getStepEstimatedDuration(s), 0) * reps / 1000).toFixed(1)}s
             </span>
@@ -422,7 +398,7 @@ function GroupBuilderSheet({ selectedIds, steps, onClose, onConfirm }: GroupBuil
             }}
             className="w-full py-3 rounded-xl cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#7C3AED', border: '1px solid #9494D4',
+              background: '#7C3AED', border: '1px solid var(--app-border-accent)',
               color: '#FFFFFF', fontSize: 14, fontWeight: 600,
             }}
           >
@@ -477,11 +453,11 @@ function EditSheet({
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', borderBottom: 'none' }}
         initial={{ y: 300 }} animate={{ y: 0 }} exit={{ y: 300 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: 'var(--app-text-ghost)' }} />
         <div
           className="px-5 pb-8 overflow-y-auto"
           style={{ maxHeight: 'calc(85vh - 24px)', WebkitOverflowScrolling: 'touch', paddingBottom: '6rem' }}
@@ -495,8 +471,8 @@ function EditSheet({
                 <span style={{ fontSize: 14, color: step.color }}>{step.icon}</span>
               </div>
               <div>
-                <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>{step.name}</h3>
-                <span style={{ color: '#4848A0', fontSize: 14 }}>
+                <h3 style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>{step.name}</h3>
+                <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
                   Paso {stepIndex + 1} de {totalSteps} · {step.command}
                 </span>
               </div>
@@ -504,27 +480,27 @@ function EditSheet({
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#EDE9FE' }}
+              style={{ background: 'var(--app-accent-soft)' }}
             >
               <X size={14} style={{ color: '#303090' }} />
             </button>
           </div>
           {desc && (
-            <p className="mb-4 ml-[52px]" style={{ color: '#4848A0', fontSize: 14, marginTop: -2 }}>
+            <p className="mb-4 ml-[52px]" style={{ color: 'var(--app-text-secondary)', fontSize: 14, marginTop: -2 }}>
               {desc}
             </p>
           )}
 
           <div
             className="flex items-center gap-2 mb-4 px-2 py-2 rounded-xl"
-            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
           >
-            <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 600 }}>Posición:</span>
+            <span style={{ color: 'var(--app-text-secondary)', fontSize: 14, fontWeight: 600 }}>Posición:</span>
             <button
               onClick={() => { if (canUp) { onReorder(stepIndex, stepIndex - 1); pulse(); } }}
               disabled={!canUp}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#F5F3FF', opacity: canUp ? 1 : 0.25 }}
+              style={{ background: 'var(--app-surface-hover)', opacity: canUp ? 1 : 0.25 }}
             >
               <ChevronUp size={14} style={{ color: '#6366F1' }} />
             </button>
@@ -535,7 +511,7 @@ function EditSheet({
               onClick={() => { if (canDown) { onReorder(stepIndex, stepIndex + 1); pulse(); } }}
               disabled={!canDown}
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90"
-              style={{ background: '#F5F3FF', opacity: canDown ? 1 : 0.25 }}
+              style={{ background: 'var(--app-surface-hover)', opacity: canDown ? 1 : 0.25 }}
             >
               <ChevronDown size={14} style={{ color: '#6366F1' }} />
             </button>
@@ -543,35 +519,35 @@ function EditSheet({
             <button
               onClick={() => { onDuplicateHere(step.id); pulse(); toast.success('Paso duplicado justo después'); onClose(); }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-90"
-              style={{ background: '#F5F3FF', color: '#6366F1', fontSize: 14, fontWeight: 600 }}
+              style={{ background: 'var(--app-surface-hover)', color: '#6366F1', fontSize: 14, fontWeight: 600 }}
             >
               <Copy size={12} /> Duplicar aquí
             </button>
             <button
               onClick={() => { onDuplicateAtPosition(step.id); }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-90"
-              style={{ background: '#F5F3FF', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
+              style={{ background: 'var(--app-surface-hover)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
               title="Elegir dónde duplicar"
             >
               <MapPin size={12} />
             </button>
           </div>
 
-          {step.parameterized ? (
+          {step.command === 'PAUSE' ? (
             <>
-              <MiniSlider label="Duración" value={duration} min={100} max={3000} step={50} unit="ms" color="#6366F1" onChange={setDuration} />
+              <MiniSlider label="Duración de pausa" value={duration} min={100} max={10000} step={100} unit="ms" color="#6366F1" onChange={setDuration} />
               <div className="h-3.5" />
             </>
           ) : (
-            <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-              <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 600 }}>Duración real</span>
+            <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+              <span style={{ color: 'var(--app-text-secondary)', fontSize: 14, fontWeight: 600 }}>Duración real del robot</span>
               <div style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, marginTop: 4 }}>
                 {(getStepEstimatedDuration(step) / 1000).toFixed(1)}s
               </div>
             </div>
           )}
 
-          <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Velocidad</p>
+          <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Velocidad</p>
           <div className="flex gap-2 mb-3.5">
             {(['slow', 'normal', 'fast'] as const).map(s => (
               <button
@@ -581,7 +557,7 @@ function EditSheet({
                 style={{
                   background: speed === s ? '#EDE9FE' : 'transparent',
                   color: speed === s ? '#7C3AED' : '#5E5E9C',
-                  border: speed === s ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                  border: speed === s ? '1px solid var(--app-border-alt)' : '1px solid var(--app-border-light)',
                   fontSize: 14, fontWeight: 600,
                 }}
               >
@@ -592,13 +568,13 @@ function EditSheet({
 
           {step.isGroup ? (
             <>
-              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700 }}>
                       Grupo · {(step.children?.length ?? 0)} pasos
                     </p>
-                    <p style={{ color: '#222280', fontSize: 14 }}>
+                    <p style={{ color: 'var(--app-text-strong)', fontSize: 14 }}>
                       Repite ×{step.repetitions} · {step.children?.length ?? 0} pasos
                     </p>
                   </div>
@@ -607,7 +583,7 @@ function EditSheet({
                       <button
                         onClick={() => { onDuplicateGroup(step.id); pulse(); onClose(); }}
                         className="px-2 py-1 rounded-lg"
-                        style={{ background: 'transparent', color: '#7C3AED', fontSize: 14, fontWeight: 700, border: '1px solid #A4A4D2' }}
+                        style={{ background: 'transparent', color: '#7C3AED', fontSize: 14, fontWeight: 700, border: '1px solid var(--app-border-alt)' }}
                       >
                         Duplicar
                       </button>
@@ -616,7 +592,7 @@ function EditSheet({
                       <button
                         onClick={() => { onUngroup(step.id); pulse(); onClose(); }}
                         className="px-2 py-1 rounded-lg"
-                        style={{ background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 700, border: '1px solid #A4A4D2' }}
+                        style={{ background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 700, border: '1px solid var(--app-border-alt)' }}
                       >
                         Desagrupar
                       </button>
@@ -625,7 +601,7 @@ function EditSheet({
                 </div>
               </div>
 
-              <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repeticiones</p>
+              <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repeticiones</p>
               <div className="flex gap-1.5 mb-3.5 flex-wrap">
                 {[1, 2, 3, 4, 5, 6, 8, 10].map(r => (
                   <button
@@ -638,33 +614,33 @@ function EditSheet({
                     style={{
                       background: reps === r ? '#EDE9FE' : 'transparent',
                       color: reps === r ? '#7C3AED' : '#5E5E9C',
-                      border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                      border: reps === r ? '1px solid var(--app-border-alt)' : '1px solid var(--app-border-light)',
                       fontSize: 14, fontWeight: 700,
                     }}
                   >{r}×</button>
                 ))}
               </div>
 
-              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+              <div className="mb-3 px-3 py-2 rounded-xl" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
                 <div className="flex items-center justify-between">
-                  <span style={{ color: '#4848A0', fontSize: 14 }}>Pasos del grupo</span>
+                  <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Pasos del grupo</span>
                   <button
                     onClick={() => setGroupExpanded(e => !e)}
-                    className="text-sm" style={{ color: '#222280' }}
+                    className="text-sm" style={{ color: 'var(--app-text-strong)' }}
                   >
                     {groupExpanded ? 'Ocultar' : 'Mostrar'}
                   </button>
                 </div>
                 {groupExpanded && step.children?.map(c => (
-                  <div key={c.id} className="mt-2 px-2 py-2 rounded-md" style={{ background: '#FFFFFF', border: '1px solid #F0EEFF' }}>
+                  <div key={c.id} className="mt-2 px-2 py-2 rounded-md" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-accent-tint)' }}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: `${c.color}0A`, border: `1px solid ${c.color}15` }}>
                           <span style={{ fontSize: 14 }}>{c.icon}</span>
                         </div>
                         <div>
-                          <div style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>{c.name}</div>
-                          <div style={{ color: '#383898', fontSize: 14 }}>{c.command}</div>
+                          <div style={{ color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>{c.name}</div>
+                          <div style={{ color: 'var(--app-text-accent)', fontSize: 14 }}>{c.command}</div>
                         </div>
                       </div>
                       <div style={{ color: '#7C3AED', fontWeight: 700 }}>
@@ -677,7 +653,7 @@ function EditSheet({
             </>
           ) : (
             <>
-              <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repetir</p>
+              <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Repetir</p>
               <div className="flex gap-1.5 mb-3.5 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {[1, 2, 3, 4, 5, 6, 8, 10].map(r => (
                   <button
@@ -687,7 +663,7 @@ function EditSheet({
                     style={{
                       background: reps === r ? '#EDE9FE' : 'transparent',
                       color: reps === r ? '#7C3AED' : '#5E5E9C',
-                      border: reps === r ? '1px solid #A4A4D2' : '1px solid #C6C6E0',
+                      border: reps === r ? '1px solid var(--app-border-alt)' : '1px solid var(--app-border-light)',
                       fontSize: 14, fontWeight: 700,
                     }}
                   >{r}×</button>
@@ -708,9 +684,9 @@ function EditSheet({
 
           <div
             className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4"
-            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
           >
-            <span style={{ color: '#4848A0', fontSize: 14 }}>Tiempo total de este paso:</span>
+            <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Tiempo total de este paso:</span>
             <span style={{ color: '#7C3AED', fontSize: 14, fontWeight: 700, marginLeft: 'auto' }}>
               {((duration + pauseAfter) * reps / 1000).toFixed(1)}s
             </span>
@@ -730,7 +706,7 @@ function EditSheet({
                 pulse(); onClose(); toast.success('Paso actualizado');
               }}
               className="flex-1 py-3 rounded-xl cursor-pointer transition-all active:scale-95"
-              style={{ background: '#E0D9FF', color: '#7C3AED', border: '1px solid #9494D4', fontSize: 14, fontWeight: 600 }}
+              style={{ background: 'var(--app-accent-bg)', color: '#7C3AED', border: '1px solid var(--app-border-accent)', fontSize: 14, fontWeight: 600 }}
             >
               Guardar cambios
             </button>
@@ -745,7 +721,6 @@ function MovePickerSheet({ bodyPart, onClose, onSelect }: {
   bodyPart: string; onClose: () => void;
   onSelect: (move: (typeof AVAILABLE_MOVES)[number], dur: number) => void;
 }) {
-  const [duration, setDuration] = useState(1000);
   const moves = AVAILABLE_MOVES.filter(m => m.bodyPart === bodyPart);
   const titles: Record<string, string> = {
     head: '🔊 Cabeza / Sonido',
@@ -765,34 +740,28 @@ function MovePickerSheet({ bodyPart, onClose, onSelect }: {
       />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', borderBottom: 'none' }}
         initial={{ y: 250 }} animate={{ y: 0 }} exit={{ y: 250 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: 'var(--app-text-ghost)' }} />
         <div className="px-5 pb-8 overflow-y-auto" style={{ maxHeight: '70vh', WebkitOverflowScrolling: 'touch' }}>
-          <h3 className="mb-0.5" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>
+          <h3 className="mb-0.5" style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>
             {titles[bodyPart] || bodyPart}
           </h3>
-          <p className="mb-3" style={{ color: '#4848A0', fontSize: 14 }}>
+          <p className="mb-3" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
             Toca un paso para añadirlo.
           </p>
-          <div className="mb-3">
-            {moves.some(m => 'parameterized' in m && m.parameterized) ? (
-              <DurationPicker value={duration} onChange={setDuration} />
-            ) : (
-              <div className="rounded-xl px-3 py-2" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-                <span style={{ color: '#4848A0', fontSize: 14 }}>Duración fija real para cada paso</span>
-              </div>
-            )}
+          <div className="mb-3 rounded-xl px-3 py-2" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+            <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Duración fija según el tiempo real del robot</span>
           </div>
           <div className="flex flex-col gap-1.5">
             {moves.map(move => (
               <motion.button
                 key={move.command}
-                onClick={() => { onSelect(move, duration); pulse(); onClose(); }}
+                onClick={() => { onSelect(move, move.arduinoDuration); pulse(); onClose(); }}
                 className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
-                style={{ background: '#F5F3FF', border: '1px solid #B2B2D2' }}
+                style={{ background: 'var(--app-surface-hover)', border: '1px solid var(--app-border-muted)' }}
                 whileTap={{ scale: 0.96, backgroundColor: '#E0D9FF' }}
               >
                 <div
@@ -802,8 +771,8 @@ function MovePickerSheet({ bodyPart, onClose, onSelect }: {
                   <span style={{ fontSize: 14, color: move.color }}>{move.icon}</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <p style={{ color: '#101048', fontSize: 14, fontWeight: 600 }}>{move.name}</p>
-                  <p style={{ color: '#5E5E9C', fontSize: 14 }}>{MOVE_DESCRIPTIONS[move.command]}</p>
+                  <p style={{ color: 'var(--app-text-deep)', fontSize: 14, fontWeight: 600 }}>{move.name}</p>
+                  <p style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>{MOVE_DESCRIPTIONS[move.command]}</p>
                 </div>
                 <div className="text-right" style={{ minWidth: 64 }}>
                   {'parameterized' in move && move.parameterized ? (
@@ -854,31 +823,16 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
 
     setLoadingDuration(true);
     try {
-      const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      if (data.error || !data.thumbnail_url) { toast.error('No se pudo obtener info del video'); return; }
-
-      const invidRes = await fetch(
-        `https://invidious.io/api/v1/videos/${videoId}?fields=lengthSeconds,formatStreams`
-      ).catch(() => null);
-
-      if (invidRes?.ok) {
-        const invidData = await invidRes.json();
-        const duration = parseInt(invidData.lengthSeconds, 10);
-        setYoutubeDuration(duration);
-
-        if (invidData.formatStreams && Array.isArray(invidData.formatStreams)) {
-          const audioStream = invidData.formatStreams.find((s: any) => s.type?.includes('audio'));
-          if (audioStream?.url) {
-            setAudioUrl(audioStream.url);
-            toast.success(`Duración: ${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, '0')} - Audio listo ✓`);
-          } else {
-            toast.success(`Duración: ${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, '0')}`);
-          }
-        }
-      } else {
-        toast.success('Video agregado (duración no disponible)');
+      const res = await fetch(`/api/choreographies/youtube-duration?url=${encodeURIComponent(url)}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error ?? 'No se pudo obtener la duración');
+        return;
       }
+      const data = await res.json();
+      const duration: number = data.seconds;
+      setYoutubeDuration(duration);
+      toast.success(`Duración: ${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, '0')} ✓`);
     } catch (err) {
       console.error(err);
       toast.error('Error al obtener duración del video');
@@ -905,13 +859,13 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
       />
       <motion.div
         className="relative w-full max-w-sm rounded-2xl p-5"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)' }}
         initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
       >
-        <h3 className="mb-1" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>
+        <h3 className="mb-1" style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>
           {isUpdate ? 'Actualizar coreografía' : 'Guardar coreografía'}
         </h3>
-        <p className="mb-4" style={{ color: '#4848A0', fontSize: 14 }}>
+        <p className="mb-4" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
           {stepsCount} pasos · {(totalTimeMs / 1000).toFixed(1)}s total
         </p>
 
@@ -921,9 +875,9 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           autoFocus
           className="w-full px-3.5 py-3 rounded-xl mb-3 outline-none transition-all"
           style={{
-            background: '#FFFFFF',
+            background: 'var(--app-surface)',
             border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`,
-            color: '#080830', fontSize: 14,
+            color: 'var(--app-text-primary)', fontSize: 14,
           }}
           onKeyDown={e => { if (e.key === 'Enter' && name.trim()) { handleSave(); } }}
         />
@@ -944,10 +898,10 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             />
           </button>
-          <span style={{ color: '#18186A', fontSize: 14 }}>Loop coreografía</span>
+          <span style={{ color: 'var(--app-text-heading)', fontSize: 14 }}>Loop coreografía</span>
         </label>
 
-        <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+        <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
           🎵 URL de YouTube (opcional)
         </p>
         <div className="flex gap-2 mb-3">
@@ -957,9 +911,9 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             placeholder="https://youtube.com/watch?v=..."
             className="flex-1 px-3.5 py-2.5 rounded-lg outline-none transition-all"
             style={{
-              background: '#FFFFFF',
+              background: 'var(--app-surface)',
               border: `1px solid ${youtubeUrl.trim() ? '#A4A4D2' : '#B2B2D2'}`,
-              color: '#080830', fontSize: 14,
+              color: 'var(--app-text-primary)', fontSize: 14,
             }}
           />
           <button
@@ -967,7 +921,7 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             disabled={!youtubeUrl.trim() || loadingDuration}
             className="px-3 py-2.5 rounded-lg cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#E0D9FF', border: '1px solid #9494D4',
+              background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)',
               color: '#6366F1', fontSize: 14, fontWeight: 600,
               opacity: youtubeUrl.trim() && !loadingDuration ? 1 : 0.4,
             }}
@@ -976,12 +930,12 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           </button>
         </div>
         {youtubeDuration && (
-          <p style={{ color: '#4848A0', fontSize: 14, marginBottom: 3 }}>
+          <p style={{ color: 'var(--app-text-secondary)', fontSize: 14, marginBottom: 3 }}>
             Duración: {Math.floor(youtubeDuration / 60)}:{String(youtubeDuration % 60).padStart(2, '0')}
           </p>
         )}
 
-        <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+        <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
           🔊 Audio (extraído automáticamente o URL directo)
         </p>
         <input
@@ -990,9 +944,9 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           placeholder="URL de audio (Spotify, SoundCloud, archivo.mp3, etc.)"
           className="w-full px-3.5 py-2.5 rounded-lg outline-none transition-all mb-3"
           style={{
-            background: '#FFFFFF',
+            background: 'var(--app-surface)',
             border: `1px solid ${audioUrl.trim() ? '#A4A4D2' : '#B2B2D2'}`,
-            color: '#080830', fontSize: 14,
+            color: 'var(--app-text-primary)', fontSize: 14,
           }}
         />
         {audioUrl && (
@@ -1005,7 +959,7 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
           <button
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}
+            style={{ background: 'transparent', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}
           >
             Cancelar
           </button>
@@ -1013,7 +967,7 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
             onClick={handleSave}
             className="flex-1 py-2.5 rounded-xl cursor-pointer transition-all active:scale-95"
             style={{
-              background: '#E0D9FF', border: '1px solid #9494D4',
+              background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)',
               color: '#7C3AED', fontSize: 14, fontWeight: 600,
               opacity: name.trim() ? 1 : 0.4,
             }}
@@ -1101,15 +1055,15 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
-      <div className="absolute inset-0" style={{ background: 'rgba(238,238,255,0.97)' }} onClick={onClose} />
+      <div className="absolute inset-0" style={{ background: 'var(--app-preview-overlay)' }} onClick={onClose} />
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-5">
-        <p className="mb-4" style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>
+        <p className="mb-4" style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>
           {playing ? 'Previsualizando coreografía...' : 'Preview terminado'}
         </p>
 
         <div
           className="rounded-2xl p-4 mb-4 w-full flex items-center justify-center"
-          style={{ background: '#FFFFFF', border: `1px solid ${currentAnimStep ? currentAnimStep.color + '25' : '#C8C8E2'}` }}
+          style={{ background: 'var(--app-surface)', border: `1px solid ${currentAnimStep ? currentAnimStep.color + '25' : 'var(--app-border)'}` }}
         >
           <OttoRobot
             key={playing ? `cmd-${cmdIdx}` : 'idle'}
@@ -1123,7 +1077,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
             <motion.div
               key={cmdIdx}
               className="flex items-center gap-3 px-4 py-2.5 rounded-xl mb-3 w-full"
-              style={{ background: '#FFFFFF', border: `1px solid ${currentAnimStep.color}30` }}
+              style={{ background: 'var(--app-surface)', border: `1px solid ${currentAnimStep.color}30` }}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.15 }}
             >
@@ -1136,20 +1090,20 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
                 </motion.span>
               </div>
               <div className="flex-1">
-                <p style={{ color: '#080830', fontSize: 14, fontWeight: 600 }}>{currentAnimStep.name}</p>
-                <p style={{ color: '#4848A0', fontSize: 14 }}>
+                <p style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 600 }}>{currentAnimStep.name}</p>
+                <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
                   ~{(getStepEstimatedDuration(currentAnimStep) / 1000).toFixed(1)}s · {currentAnimStep.speed}
                 </p>
               </div>
               <div className="text-right">
                 <p style={{ color: currentAnimStep.color, fontSize: 14, fontWeight: 700 }}>{topIndex + 1}</p>
-                <p style={{ color: '#5E5E9C', fontSize: 14 }}>de {steps.length}</p>
+                <p style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>de {steps.length}</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="w-full mb-2 rounded-full overflow-hidden" style={{ height: 3, background: '#C8C8E2' }}>
+        <div className="w-full mb-2 rounded-full overflow-hidden" style={{ height: 3, background: 'var(--app-border)' }}>
           <motion.div
             className="h-full rounded-full"
             style={{ background: currentAnimStep ? currentAnimStep.color : '#6366F1', width: `${progressPct}%` }}
@@ -1164,7 +1118,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
               style={{
                 width: i === topIndex && playing ? 12 : 6,
                 height: 6,
-                background: i === topIndex && playing ? s.color : i < topIndex ? `${s.color}60` : '#B6B6D6',
+                background: i === topIndex && playing ? s.color : i < topIndex ? `${s.color}60` : 'var(--app-border-accent)',
                 transition: 'all 0.2s',
                 borderRadius: 3,
               }}
@@ -1177,7 +1131,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
             <button
               onClick={() => { setCmdIdx(0); setPlaying(true); }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95"
-              style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
+              style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
             >
               <Play size={14} /> Repetir
             </button>
@@ -1194,7 +1148,7 @@ function PreviewOverlay({ steps, onClose }: { steps: Step[]; onClose: () => void
           <button
             onClick={onClose}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', color: '#303090', fontSize: 14, fontWeight: 600 }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', color: '#303090', fontSize: 14, fontWeight: 600 }}
           >
             Cerrar
           </button>
@@ -1221,7 +1175,7 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
       as="div"
       layout
       onDragEnd={onDragEnd}
-      style={{ borderBottom: '1px solid #CDCDE8', listStyle: 'none', overflow: 'hidden' }}
+      style={{ borderBottom: '1px solid var(--app-border-subtle)', listStyle: 'none', overflow: 'hidden' }}
       whileDrag={{
         scale: 1.025,
         backgroundColor: '#E0D9FF',
@@ -1240,19 +1194,19 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
         >
           <GripVertical size={13} />
         </div>
-        <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, width: 18 }}>{index + 1}</span>
+        <span style={{ color: 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, width: 18 }}>{index + 1}</span>
         <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: `${step.color}0A`, border: `1px solid ${step.color}15` }}>
           <span style={{ fontSize: 14 }}>{step.isGroup ? '📦' : step.icon}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="truncate" style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>{step.name}</p>
+          <p className="truncate" style={{ color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>{step.name}</p>
           {step.isGroup && (
-            <p style={{ color: '#222280', fontSize: 14, marginTop: 2 }}>
+            <p style={{ color: 'var(--app-text-strong)', fontSize: 14, marginTop: 2 }}>
               {step.children?.length ?? 0} pasos · ×{step.repetitions}
             </p>
           )}
         </div>
-        <span style={{ color: '#5E5E9C', fontSize: 14, flexShrink: 0 }}>
+        <span style={{ color: 'var(--app-text-muted)', fontSize: 14, flexShrink: 0 }}>
           {`${(getStepEstimatedDuration(step) / 1000).toFixed(1)}s`}
           {!step.isGroup && step.repetitions > 1 && ` ×${step.repetitions}`}
         </span>
@@ -1260,7 +1214,7 @@ function DraggableStepItem({ step, index, onEdit, onDragEnd }: {
         <button
           onClick={(e) => { e.stopPropagation(); onEdit(); pulse(); }}
           className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
-          style={{ background: '#F5F3FF', border: '1px solid #B2B2D2' }}
+          style={{ background: 'var(--app-surface-hover)', border: '1px solid var(--app-border-muted)' }}
         >
           <Pencil size={11} style={{ color: '#6366F1' }} />
         </button>
@@ -1346,7 +1300,6 @@ export function ChoreographyScreen() {
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  const [durations, setDurations] = useState<Record<string, number>>({});
   const [editingStep, setEditingStep] = useState<Step | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('robot');
   const [tappedPart, setTappedPart] = useState<string | null>(null);
@@ -1411,13 +1364,13 @@ export function ChoreographyScreen() {
   const pickerGroupStep = groupPositionPicker ? steps.find(s => s.id === groupPositionPicker) ?? null : null;
 
   return (
-    <div className="flex flex-col min-h-dvh" style={{ background: '#F8F8FF' }}>
+    <div className="flex flex-col min-h-dvh" style={{ background: 'var(--app-bg)' }}>
 
       <div className="flex-shrink-0 px-4 pt-3 pb-1 md:px-8 md:pt-6">
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="flex items-center gap-2">
-              <h2 style={{ color: '#080830', fontSize: 14, fontWeight: 800 }}>
+              <h2 style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 800 }}>
                 {editingChoreo ? `Editando: ${editingChoreo.name}` : 'Build Your Dance'}
               </h2>
               {editingChoreo && (
@@ -1434,11 +1387,11 @@ export function ChoreographyScreen() {
                     {showNewConfirm && (
                       <motion.div className="fixed inset-0 z-50 flex items-center justify-center px-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setShowNewConfirm(false)} />
-                        <motion.div className="relative w-full max-w-xs rounded-2xl p-5" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }} initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}>
-                          <h3 className="mb-2" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>¿Empezar desde cero?</h3>
-                          <p className="mb-4" style={{ color: '#4848A0', fontSize: 14 }}>Los cambios no guardados se perderán.</p>
+                        <motion.div className="relative w-full max-w-xs rounded-2xl p-5" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)' }} initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}>
+                          <h3 className="mb-2" style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>¿Empezar desde cero?</h3>
+                          <p className="mb-4" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>Los cambios no guardados se perderán.</p>
                           <div className="flex gap-2">
-                            <button onClick={() => setShowNewConfirm(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}>Cancelar</button>
+                            <button onClick={() => setShowNewConfirm(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>Cancelar</button>
                             <button onClick={() => { clearAll(); navigate('/choreography'); setShowNewConfirm(false); }} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 600 }}>Empezar nuevo</button>
                           </div>
                         </motion.div>
@@ -1448,12 +1401,12 @@ export function ChoreographyScreen() {
                 </>
               )}
             </div>
-            <p style={{ color: '#4848A0', fontSize: 14 }}>
+            <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
               {steps.length} paso{steps.length !== 1 ? 's' : ''} · {formatMs(totalTime)}
-              {steps.length > 0 && <span style={{ color: '#5E5E9C' }}> · Toca un paso para editar</span>}
+              {steps.length > 0 && <span style={{ color: 'var(--app-text-muted)' }}> · Toca un paso para editar</span>}
             </p>
           </div>
-          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #BDBDDB' }}>
+          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--app-border-strong)' }}>
             {(['robot', 'grid'] as const).map(v => (
               <button
                 key={v}
@@ -1479,7 +1432,7 @@ export function ChoreographyScreen() {
           {steps.length === 0 ? (
             <div
               className="flex items-center justify-center w-full py-4 rounded-xl"
-              style={{ background: '#FFFFFF', border: '1px dashed #A6A6D4', color: '#5E5E9C', fontSize: 14 }}
+              style={{ background: 'var(--app-surface)', border: '1px dashed #A6A6D4', color: 'var(--app-text-muted)', fontSize: 14 }}
             >
               <span className="md:hidden">{viewMode === 'robot' ? '👆 Toca el cuerpo de Otto para agregar' : '👆 Toca una tarjeta para agregar'}</span>
               <span className="hidden md:inline">{viewMode === 'robot' ? '🖱 Haz click en Otto para agregar movimientos' : '🖱 Haz click en una tarjeta para agregar'}</span>
@@ -1489,7 +1442,7 @@ export function ChoreographyScreen() {
               key={step.id}
               className="flex-shrink-0 flex flex-col items-center justify-center gap-0.5 rounded-xl cursor-pointer relative"
               style={{
-                background: editingStep?.id === step.id ? `${step.color}18` : '#FFFFFF',
+                background: editingStep?.id === step.id ? `${step.color}18` : 'var(--app-surface)',
                 border: `2px solid ${
                   editingStep?.id === step.id
                     ? step.color + '70'
@@ -1530,7 +1483,7 @@ export function ChoreographyScreen() {
                 )}
               </button>
               <span style={{ fontSize: 20, lineHeight: 1 }}>{step.isGroup ? '📦' : step.icon}</span>
-              <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 700 }}>{i + 1}</span>
+              <span style={{ color: 'var(--app-text-secondary)', fontSize: 14, fontWeight: 700 }}>{i + 1}</span>
               {step.isGroup ? (
                 <span style={{ color: step.color, fontSize: 14, fontWeight: 700 }}>
                   {step.children?.length ?? 0}p
@@ -1555,7 +1508,7 @@ export function ChoreographyScreen() {
                 <button
                   onClick={() => setShowGroupBuilder(true)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg cursor-pointer active:scale-95 transition-transform"
-                  style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
+                  style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
                 >
                   <Package size={11} /> Agrupar
                 </button>
@@ -1563,7 +1516,7 @@ export function ChoreographyScreen() {
               <button
                 onClick={() => setSelectedIds([])}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg cursor-pointer active:scale-95"
-                style={{ background: 'transparent', border: '1px solid #BDBDDB', color: '#383898', fontSize: 14 }}
+                style={{ background: 'transparent', border: '1px solid var(--app-border-strong)', color: 'var(--app-text-accent)', fontSize: 14 }}
               >
                 <X size={11} /> Limpiar
               </button>
@@ -1583,9 +1536,9 @@ export function ChoreographyScreen() {
             {/* Izquierda: robot */}
             <div
               className="p-3 rounded-2xl mb-3 md:mb-0 md:flex md:flex-col md:items-center md:justify-center md:overflow-hidden"
-              style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+              style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
             >
-              <p className="text-center mb-1" style={{ color: '#4848A0', fontSize: 14 }}>
+              <p className="text-center mb-1" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>
                 <span className="md:hidden">👆 Toca</span>
                 <span className="hidden md:inline">🖱 Haz click en</span>
                 {' '}una parte de Otto para ver los movimientos
@@ -1595,19 +1548,19 @@ export function ChoreographyScreen() {
 
             {/* Derecha: lista de pasos */}
             {steps.length === 0 ? (
-              <div className="hidden md:flex flex-col items-center justify-center rounded-xl md:h-full" style={{ background: '#FFFFFF', border: '1px dashed #EBEBF8' }}>
-                <span style={{ color: '#7878A8', fontSize: 14 }}>Toca el robot para agregar pasos</span>
+              <div className="hidden md:flex flex-col items-center justify-center rounded-xl md:h-full" style={{ background: 'var(--app-surface)', border: '1px dashed #EBEBF8' }}>
+                <span style={{ color: 'var(--app-text-faint)', fontSize: 14 }}>Toca el robot para agregar pasos</span>
               </div>
             ) : (
-              <div className="rounded-xl overflow-hidden md:flex md:flex-col md:h-full" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+              <div className="rounded-xl overflow-hidden md:flex md:flex-col md:h-full" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
                 <div
                   className="flex items-center justify-between px-3 py-2 flex-shrink-0"
-                  style={{ borderBottom: '1px solid #C8C8E2' }}
+                  style={{ borderBottom: '1px solid var(--app-border)' }}
                 >
-                  <span style={{ color: '#4848A0', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>
+                  <span style={{ color: 'var(--app-text-secondary)', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>
                     TODOS LOS PASOS
                   </span>
-                  <span style={{ color: '#5E5E9C', fontSize: 14 }}>{steps.length} total</span>
+                  <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>{steps.length} total</span>
                 </div>
                 <Reorder.Group
                   axis="y"
@@ -1659,7 +1612,7 @@ export function ChoreographyScreen() {
                   style={{
                     background: activeCategory === c.key ? '#EDE9FE' : 'transparent',
                     color: activeCategory === c.key ? '#7C3AED' : '#5E5E9C',
-                    border: activeCategory === c.key ? '1px solid #A4A4D2' : '1px solid #C8C8E2',
+                    border: activeCategory === c.key ? '1px solid var(--app-border-alt)' : '1px solid var(--app-border)',
                     fontSize: 14, fontWeight: 600,
                   }}
                 >{c.label}</button>
@@ -1671,9 +1624,9 @@ export function ChoreographyScreen() {
                 <motion.button
                   key={move.command}
                   className="p-2.5 rounded-xl cursor-pointer text-left"
-                  style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+                  style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
                   whileTap={{ scale: 0.95, borderColor: move.color + '40' }}
-                  onClick={() => handleAddMove(move, durations[move.command] || 1000)}
+                  onClick={() => handleAddMove(move, move.arduinoDuration)}
                 >
                   <div className="flex items-center gap-2 mb-0.5">
                     <div
@@ -1683,20 +1636,18 @@ export function ChoreographyScreen() {
                       <span style={{ fontSize: 14, color: move.color }}>{move.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="truncate" style={{ color: '#18186A', fontSize: 14, fontWeight: 600 }}>
+                      <p className="truncate" style={{ color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>
                         {move.name}
                       </p>
                     </div>
                   </div>
-                  <p className="truncate mb-1.5 pl-10" style={{ color: '#5E5E9C', fontSize: 14 }}>
+                  <p className="truncate mb-1 pl-10" style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                     {MOVE_DESCRIPTIONS[move.command]}
                   </p>
                   <div className="pl-10">
-                    <DurationPicker
-                      compact
-                      value={durations[move.command] || 1000}
-                      onChange={v => setDurations(d => ({ ...d, [move.command]: v }))}
-                    />
+                    <span style={{ color: '#7C3AED', fontSize: 12, fontWeight: 700 }}>
+                      {(move.arduinoDuration / 1000).toFixed(1)}s
+                    </span>
                   </div>
                 </motion.button>
               ))}
@@ -1707,7 +1658,7 @@ export function ChoreographyScreen() {
 
       {/* Barra de acciones — fija en mobile siempre, fija en desktop solo en grid mode */}
       <div className={`fixed left-0 right-0 z-40 md:left-[72px] bottom-[calc(6rem+env(safe-area-inset-bottom))] md:bottom-0 ${viewMode === 'robot' ? 'md:hidden' : ''}`}>
-        <div className="px-4 pt-5 pb-2 md:px-8" style={{ background: 'linear-gradient(to top, #F8F8FF 65%, transparent)' }}>
+        <div className="px-4 pt-5 pb-2 md:px-8" style={{ background: 'linear-gradient(to top, var(--app-bg) 65%, transparent)' }}>
           <ActionBar
             steps={steps}
             onClear={() => { clearAll(); setSelectedIds([]); pulse(); toast('Pasos borrados', { icon: '🗑️' }); }}

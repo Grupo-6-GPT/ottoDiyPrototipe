@@ -11,13 +11,13 @@ function ConfirmDelete({ name, onConfirm, onCancel }: { name: string; onConfirm:
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={onCancel} />
       <motion.div
         className="relative w-full max-w-xs rounded-2xl p-5"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)' }}
         initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
       >
-        <h3 className="mb-2" style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>Delete "{name}"?</h3>
-        <p className="mb-4" style={{ color: '#4848A0', fontSize: 14 }}>This action cannot be undone.</p>
+        <h3 className="mb-2" style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>Delete "{name}"?</h3>
+        <p className="mb-4" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>This action cannot be undone.</p>
         <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}>Cancel</button>
+          <button onClick={onCancel} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'transparent', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>Cancel</button>
           <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: 14, fontWeight: 600 }}>Delete</button>
         </div>
       </motion.div>
@@ -48,26 +48,26 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
       <motion.div
         className="relative w-full max-w-md md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', borderBottom: 'none' }}
+        style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', borderBottom: 'none' }}
         initial={{ y: 300 }} animate={{ y: 0 }} exit={{ y: 300 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: '#A6A6D4' }} />
+        <div className="w-8 h-1 rounded-full mx-auto mt-3 mb-3" style={{ background: 'var(--app-text-ghost)' }} />
         <div className="px-5 pb-8 overflow-y-auto" style={{ maxHeight: '75vh', WebkitOverflowScrolling: 'touch' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between mb-1">
-            <h3 style={{ color: '#080830', fontSize: 14, fontWeight: 700 }}>{choreo.name}</h3>
-            <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: '#F8F8FF' }}>
+            <h3 style={{ color: 'var(--app-text-primary)', fontSize: 14, fontWeight: 700 }}>{choreo.name}</h3>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: 'var(--app-bg)' }}>
               <X size={14} style={{ color: '#303090' }} />
             </button>
           </div>
 
           {/* Meta */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="flex items-center gap-1" style={{ color: '#4848A0', fontSize: 14 }}><Hash size={10} />{choreo.steps.length} steps</span>
-            <span className="flex items-center gap-1" style={{ color: '#4848A0', fontSize: 14 }}><Clock size={10} />{(totalMs/1000).toFixed(1)}s</span>
-            <span style={{ color: '#4848A0', fontSize: 14 }}>BPM {choreo.bpm}</span>
+            <span className="flex items-center gap-1" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}><Hash size={10} />{choreo.steps.length} steps</span>
+            <span className="flex items-center gap-1" style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}><Clock size={10} />{(totalMs/1000).toFixed(1)}s</span>
+            <span style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>BPM {choreo.bpm}</span>
             {choreo.loop && <span className="flex items-center gap-1" style={{ color: '#6366F1', fontSize: 14 }}><Repeat size={10} />Loop</span>}
           </div>
 
@@ -79,19 +79,19 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
           </div>
 
           {/* Steps list */}
-          <div className="rounded-xl overflow-hidden mb-4" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-            <div className="px-3 py-1.5" style={{ borderBottom: '1px solid #CDCDE8' }}>
-              <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>PASOS</span>
+          <div className="rounded-xl overflow-hidden mb-4" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+            <div className="px-3 py-1.5" style={{ borderBottom: '1px solid var(--app-border-subtle)' }}>
+              <span style={{ color: 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>PASOS</span>
             </div>
             <div className="overflow-y-auto" style={{ maxHeight: 200, WebkitOverflowScrolling: 'touch' }}>
               {choreo.steps.map((s, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: '1px solid #FFFFFF' }}>
-                  <span style={{ color: '#5E5E9C', fontSize: 14, fontWeight: 700, width: 18 }}>{i + 1}</span>
+                <div key={i} className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: '1px solid var(--app-border-subtle)' }}>
+                  <span style={{ color: 'var(--app-text-muted)', fontSize: 14, fontWeight: 700, width: 18 }}>{i + 1}</span>
                   <div className="w-6 h-6 rounded flex items-center justify-center" style={{ background: `${s.color}0A` }}>
                     <span style={{ fontSize: 14 }}>{s.icon}</span>
                   </div>
-                  <span className="flex-1" style={{ color: '#222280', fontSize: 14 }}>{s.name}</span>
-                  <span style={{ color: '#5E5E9C', fontSize: 14 }}>
+                  <span className="flex-1" style={{ color: 'var(--app-text-strong)', fontSize: 14 }}>{s.name}</span>
+                  <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                     {`${(getStepEstimatedDuration(s) / 1000).toFixed(1)}s`}
                     {s.repetitions > 1 && ` ×${s.repetitions}`}
                   </span>
@@ -104,7 +104,7 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
           <button
             onClick={() => setEditingMeta(v => !v)}
             className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl mb-3 cursor-pointer transition-all"
-            style={{ background: '#FFFFFF', border: '1px solid #C8C8E2', color: '#303090', fontSize: 14, fontWeight: 600 }}
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)', color: '#303090', fontSize: 14, fontWeight: 600 }}
           >
             <Pencil size={12} />
             Editar información
@@ -120,18 +120,18 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
                 <div className="flex flex-col gap-3 pb-3">
                   {/* Nombre */}
                   <div>
-                    <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>Nombre</p>
+                    <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>Nombre</p>
                     <input
                       value={name} onChange={e => setName(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: '#FFFFFF', border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`, color: '#080830', fontSize: 14 }}
+                      style={{ background: 'var(--app-surface)', border: `1px solid ${name.trim() ? '#A4A4D2' : '#B2B2D2'}`, color: 'var(--app-text-primary)', fontSize: 14 }}
                     />
                   </div>
 
                   {/* BPM */}
                   <div>
                     <div className="flex justify-between mb-1">
-                      <p style={{ color: '#383898', fontSize: 14, fontWeight: 600 }}>BPM</p>
+                      <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>BPM</p>
                       <span style={{ color: '#6366F1', fontSize: 14, fontWeight: 700 }}>{bpm}</span>
                     </div>
                     <input type="range" min={60} max={200} step={5} value={bpm} onChange={e => setBpm(Number(e.target.value))} className="w-full" />
@@ -151,40 +151,40 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                       />
                     </button>
-                    <span style={{ color: '#18186A', fontSize: 14 }}>Loop</span>
+                    <span style={{ color: 'var(--app-text-heading)', fontSize: 14 }}>Loop</span>
                   </label>
 
                   {/* YouTube URL */}
                   <div>
-                    <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>URL de YouTube (opcional)</p>
+                    <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>URL de YouTube (opcional)</p>
                     <input
                       value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)}
                       placeholder="https://youtube.com/watch?v=..."
                       className="w-full px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: '#FFFFFF', border: '1px solid #B2B2D2', color: '#080830', fontSize: 14 }}
+                      style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-primary)', fontSize: 14 }}
                     />
                   </div>
 
                   {/* Audio URL */}
                   <div>
-                    <p style={{ color: '#383898', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>URL de audio (opcional)</p>
+                    <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 5 }}>URL de audio (opcional)</p>
                     <input
                       value={audioUrl} onChange={e => setAudioUrl(e.target.value)}
                       placeholder="URL de audio directo..."
                       className="w-full px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: '#FFFFFF', border: '1px solid #B2B2D2', color: '#080830', fontSize: 14 }}
+                      style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-primary)', fontSize: 14 }}
                     />
                   </div>
 
                   {/* Guardar cambios */}
                   <div className="flex gap-2">
-                    <button onClick={() => setEditingMeta(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid #B2B2D2', color: '#383898', fontSize: 14, fontWeight: 600 }}>
+                    <button onClick={() => setEditingMeta(false)} className="flex-1 py-2.5 rounded-xl cursor-pointer" style={{ background: 'transparent', border: '1px solid var(--app-border-muted)', color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600 }}>
                       Cancelar
                     </button>
                     <button
                       onClick={handleSaveMeta}
                       className="flex-1 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform"
-                      style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600, opacity: name.trim() ? 1 : 0.4 }}
+                      style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600, opacity: name.trim() ? 1 : 0.4 }}
                     >
                       Guardar cambios
                     </button>
@@ -196,13 +196,13 @@ function ChoreoDetail({ choreo, onClose, onPlay, onEdit, onDelete, onExport, onU
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button onClick={onPlay} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}>
+            <button onClick={onPlay} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}>
               <Play size={14} /> Play
             </button>
-            <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', color: '#18186A', fontSize: 14, fontWeight: 600 }}>
+            <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>
               <Pencil size={14} /> Editar pasos
             </button>
-            <button onClick={onExport} className="w-12 flex items-center justify-center py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB' }}>
+            <button onClick={onExport} className="w-12 flex items-center justify-center py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)' }}>
               <Download size={14} style={{ color: '#6366F1' }} />
             </button>
             <button onClick={onDelete} className="w-12 flex items-center justify-center py-3 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
@@ -257,17 +257,17 @@ export function LibraryScreen() {
   };
 
   return (
-    <div className="flex flex-col min-h-dvh" style={{ background: '#F8F8FF' }}>
+    <div className="flex flex-col min-h-dvh" style={{ background: 'var(--app-bg)' }}>
       {/* Header */}
       <div className="flex-shrink-0 px-5 pt-5 md:px-8 md:pt-8 max-w-7xl w-full mx-auto">
         <div className="md:flex md:items-center md:justify-between md:gap-8 md:mb-2">
           <div className="mb-3 md:mb-0">
-            <h2 className="mb-0.5" style={{ color: '#080830', fontSize: 20, fontWeight: 800 }}>My Dances</h2>
-            <p style={{ color: '#4848A0', fontSize: 14 }}>{choreos.length} saved choreograph{choreos.length !== 1 ? 'ies' : 'y'}</p>
+            <h2 className="mb-0.5" style={{ color: 'var(--app-text-primary)', fontSize: 20, fontWeight: 800 }}>My Dances</h2>
+            <p style={{ color: 'var(--app-text-secondary)', fontSize: 14 }}>{choreos.length} saved choreograph{choreos.length !== 1 ? 'ies' : 'y'}</p>
           </div>
           {/* Search */}
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl mb-3 md:mb-0 md:w-72 md:flex-shrink-0" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
-            <Search size={14} style={{ color: '#5E5E9C' }} />
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl mb-3 md:mb-0 md:w-72 md:flex-shrink-0" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+            <Search size={14} style={{ color: 'var(--app-text-muted)' }} />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search dances..."
@@ -276,7 +276,7 @@ export function LibraryScreen() {
             />
             {search && (
               <button onClick={() => setSearch('')} className="cursor-pointer active:scale-90 transition-transform">
-                <X size={12} style={{ color: '#5E5E9C' }} />
+                <X size={12} style={{ color: 'var(--app-text-muted)' }} />
               </button>
             )}
           </div>
@@ -284,7 +284,7 @@ export function LibraryScreen() {
           <button
             onClick={() => navigate('/choreography')}
             className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer transition-all flex-shrink-0"
-            style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
+            style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}
           >
             <Plus size={15} /> New Dance
           </button>
@@ -361,17 +361,17 @@ export function LibraryScreen() {
         <AnimatePresence mode="popLayout">
           {filtered.length === 0 ? (
             <motion.div className="flex flex-col items-center justify-center py-14" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-3" style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}>
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-3" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
                 <Layers size={22} style={{ color: '#B2B2D2' }} />
               </div>
-              <p style={{ color: '#7878A8', fontSize: 14, fontWeight: 600 }}>
+              <p style={{ color: 'var(--app-text-faint)', fontSize: 14, fontWeight: 600 }}>
                 {search ? 'No results found' : 'No dances saved yet'}
               </p>
               <p style={{ color: '#B2B2D2', fontSize: 14, marginTop: 2 }}>
                 {search ? 'Try a different search' : 'Build and save your first choreography'}
               </p>
               {!search && (
-                <button onClick={() => navigate('/choreography')} className="mt-4 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: '#E0D9FF', border: '1px solid #9494D4', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}>
+                <button onClick={() => navigate('/choreography')} className="mt-4 px-5 py-2.5 rounded-xl cursor-pointer active:scale-95 transition-transform" style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)', color: '#7C3AED', fontSize: 14, fontWeight: 600 }}>
                   <Plus size={13} className="inline mr-1.5" style={{ verticalAlign: '-2px' }} /> Create Dance
                 </button>
               )}
@@ -385,7 +385,7 @@ export function LibraryScreen() {
                   <motion.button
                     key={c.id}
                     className="p-3.5 rounded-xl cursor-pointer text-left w-full transition-all"
-                    style={{ background: '#FFFFFF', border: '1px solid #C8C8E2' }}
+                    style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
                     layout
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -406,13 +406,13 @@ export function LibraryScreen() {
                     </div>
 
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="flex items-center gap-1" style={{ color: '#5E5E9C', fontSize: 14 }}>
+                      <span className="flex items-center gap-1" style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                         <Hash size={9} /> {c.steps.length}
                       </span>
-                      <span className="flex items-center gap-1" style={{ color: '#5E5E9C', fontSize: 14 }}>
+                      <span className="flex items-center gap-1" style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
                         <Clock size={9} /> {secs}s
                       </span>
-                      <span style={{ color: '#5E5E9C', fontSize: 14 }}>BPM {c.bpm}</span>
+                      <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>BPM {c.bpm}</span>
                       {c.loop && <span className="flex items-center gap-1" style={{ color: '#6366F1', fontSize: 14 }}><Repeat size={9} /></span>}
                       {(c.youtubeUrl || c.audioUrl) && (
                         <span className="flex items-center gap-1" style={{ color: '#3B82F6', fontSize: 14 }}>
@@ -423,10 +423,10 @@ export function LibraryScreen() {
 
                     {/* Quick actions */}
                     <div className="flex gap-1.5 mt-2.5">
-                      <span onClick={(e) => { e.stopPropagation(); handlePlay(c); }} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-transform" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', color: '#6366F1', fontSize: 14, fontWeight: 600 }}>
+                      <span onClick={(e) => { e.stopPropagation(); handlePlay(c); }} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-transform" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', color: '#6366F1', fontSize: 14, fontWeight: 600 }}>
                         <Play size={10} /> Play
                       </span>
-                      <span onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-transform" style={{ background: '#FFFFFF', border: '1px solid #BDBDDB', color: '#18186A', fontSize: 14, fontWeight: 600 }}>
+                      <span onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-transform" style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border-strong)', color: 'var(--app-text-heading)', fontSize: 14, fontWeight: 600 }}>
                         <Pencil size={10} /> Edit
                       </span>
                       <div className="flex-1" />
@@ -445,7 +445,7 @@ export function LibraryScreen() {
       {/* FAB — mobile only */}
       <motion.button
         className="md:hidden fixed right-5 bottom-24 w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer z-40 active:scale-90 transition-transform"
-        style={{ background: '#E0D9FF', border: '1px solid #9494D4' }}
+        style={{ background: 'var(--app-accent-bg)', border: '1px solid var(--app-border-accent)' }}
         onClick={() => navigate('/choreography')}
         whileTap={{ scale: 0.9 }}
       >

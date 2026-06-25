@@ -69,6 +69,17 @@ function toFront(row: RowDataPacket) {
   };
 }
 
+// GET /api/choreographies/youtube-duration?url=...
+router.get('/youtube-duration', wrap(async (req, res) => {
+  const url = (req.query.url as string) ?? '';
+  if (!url) { res.status(400).json({ error: 'url requerida' }); return; }
+  const videoId = extractVideoId(url);
+  if (!videoId) { res.status(400).json({ error: 'URL de YouTube inválida' }); return; }
+  const seconds = await obtenerDuracionVideo(videoId);
+  if (seconds == null) { res.status(404).json({ error: 'No se pudo obtener la duración' }); return; }
+  res.json({ seconds, videoId });
+}));
+
 // GET /api/choreographies
 router.get('/', wrap(async (_req, res) => {
   const [rows] = await pool.query<RowDataPacket[]>(
