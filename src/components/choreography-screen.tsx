@@ -806,7 +806,11 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
   const [youtubeUrl, setYoutubeUrl] = useState(initialData?.youtubeUrl || '');
   const [audioUrl, setAudioUrl] = useState(initialData?.audioUrl || '');
   const [loadingDuration, setLoadingDuration] = useState(false);
-  const [youtubeDuration, setYoutubeDuration] = useState<number | undefined>(undefined);
+  const [youtubeDuration, setYoutubeDuration] = useState<number | undefined>(
+    initialData?.youtubeDuration
+  );
+  const [showManualDuration, setShowManualDuration] = useState(false);
+  const [manualDurationStr, setManualDurationStr] = useState('');
 
   const extractVideoId = (url: string): string | null => {
     try {
@@ -815,6 +819,23 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
       if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
       return null;
     } catch { return null; }
+  };
+
+  const parseManualDuration = (s: string): number | null => {
+    s = s.trim();
+    const mmss = s.match(/^(\d{1,2}):(\d{2})$/);
+    if (mmss) return parseInt(mmss[1]) * 60 + parseInt(mmss[2]);
+    const secs = parseFloat(s);
+    if (!isNaN(secs) && secs > 0) return Math.round(secs);
+    return null;
+  };
+
+  const applyManualDuration = () => {
+    const secs = parseManualDuration(manualDurationStr);
+    if (secs === null) { toast.error('Formato inválido — usa MM:SS o segundos'); return; }
+    setYoutubeDuration(secs);
+    setShowManualDuration(false);
+    toast.success(`Duración: ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')} ✓`);
   };
 
   const fetchYoutubeDuration = async (url: string) => {
@@ -826,16 +847,19 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
       const res = await fetch(`/api/choreographies/youtube-duration?url=${encodeURIComponent(url)}`);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        toast.error(err.error ?? 'No se pudo obtener la duración');
+        toast.error((err.error ?? 'No se pudo obtener la duración') + ' — ingresa la duración manualmente');
+        setShowManualDuration(true);
         return;
       }
       const data = await res.json();
       const duration: number = data.seconds;
       setYoutubeDuration(duration);
+      setShowManualDuration(false);
       toast.success(`Duración: ${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, '0')} ✓`);
     } catch (err) {
       console.error(err);
-      toast.error('Error al obtener duración del video');
+      toast.error('Error al obtener duración — ingresa la duración manualmente');
+      setShowManualDuration(true);
     } finally {
       setLoadingDuration(false);
     }
@@ -843,6 +867,11 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
 
   const handleSave = () => {
     if (!name.trim()) { toast.error('Escribe un nombre'); return; }
+    if (youtubeUrl.trim() && !youtubeDuration) {
+      toast.error('Ingresa la duración del video para sincronizar la coreografía');
+      setShowManualDuration(true);
+      return;
+    }
     onSave(name, bpm, loop, youtubeUrl || undefined, audioUrl || undefined, youtubeDuration);
     onClose();
   };
@@ -904,10 +933,10 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
         <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
           🎵 URL de YouTube (opcional)
         </p>
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-2 mb-2">
           <input
             value={youtubeUrl}
-            onChange={e => setYoutubeUrl(e.target.value)}
+            onChange={e => { setYoutubeUrl(e.target.value); setYoutubeDuration(undefined); setShowManualDuration(false); }}
             placeholder="https://youtube.com/watch?v=..."
             className="flex-1 px-3.5 py-2.5 rounded-lg outline-none transition-all"
             style={{
@@ -926,13 +955,75 @@ function SaveModal({ stepsCount, totalTimeMs, onClose, onSave, initialData, isUp
               opacity: youtubeUrl.trim() && !loadingDuration ? 1 : 0.4,
             }}
           >
-            {loadingDuration ? '⏳' : '✓'}
+            {loadingDuration ? '⏳' : '⏱'}
           </button>
         </div>
-        {youtubeDuration && (
-          <p style={{ color: 'var(--app-text-secondary)', fontSize: 14, marginBottom: 3 }}>
-            Duración: {Math.floor(youtubeDuration / 60)}:{String(youtubeDuration % 60).padStart(2, '0')}
-          </p>
+
+        {/* Duración obtenida automáticamente */}
+        {youtubeDuration && !showManualDuration && (
+          <div className="flex items-center justify-between mb-2 px-3 py-2 rounded-lg"
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+            <span style={{ color: '#059669', fontSize: 14, fontWeight: 600 }}>
+              ✓ {Math.floor(youtubeDuration / 60)}:{String(youtubeDuration % 60).padStart(2, '0')}
+            </span>
+            <button
+              onClick={() => { setShowManualDuration(true); setManualDurationStr(`${Math.floor(youtubeDuration / 60)}:${String(youtubeDuration % 60).padStart(2, '0')}`); }}
+              style={{ color: 'var(--app-text-muted)', fontSize: 12, cursor: 'pointer' }}
+            >
+              Editar
+            </button>
+          </div>
+        )}
+
+        {/* Input manual de duración */}
+        {youtubeUrl.trim() && !youtubeDuration && !showManualDuration && (
+          <div className="flex items-center justify-between mb-2 px-3 py-2 rounded-lg"
+            style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+            <span style={{ color: 'var(--app-text-muted)', fontSize: 14 }}>
+              Duración no detectada
+            </span>
+            <button
+              onClick={() => setShowManualDuration(true)}
+              style={{ color: '#6366F1', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Ingresar manual
+            </button>
+          </div>
+        )}
+
+        {showManualDuration && (
+          <div className="mb-2">
+            <p className="mb-1.5" style={{ color: 'var(--app-text-accent)', fontSize: 12, fontWeight: 600 }}>
+              Duración del video (requerida) — MM:SS o segundos
+            </p>
+            <div className="flex gap-2">
+              <input
+                value={manualDurationStr}
+                onChange={e => setManualDurationStr(e.target.value)}
+                placeholder="3:45  ó  225"
+                autoFocus
+                className="flex-1 px-3 py-2 rounded-lg outline-none"
+                style={{
+                  background: 'var(--app-surface)',
+                  border: `1px solid ${manualDurationStr.trim() ? '#A4A4D2' : '#F87171'}`,
+                  color: 'var(--app-text-primary)', fontSize: 14,
+                }}
+                onKeyDown={e => { if (e.key === 'Enter') applyManualDuration(); }}
+              />
+              <button
+                onClick={applyManualDuration}
+                disabled={!manualDurationStr.trim()}
+                className="px-3 py-2 rounded-lg cursor-pointer transition-all active:scale-95"
+                style={{
+                  background: '#E0D9FF', border: '1px solid var(--app-border-accent)',
+                  color: '#7C3AED', fontSize: 14, fontWeight: 700,
+                  opacity: manualDurationStr.trim() ? 1 : 0.4,
+                }}
+              >
+                OK
+              </button>
+            </div>
+          </div>
         )}
 
         <p style={{ color: 'var(--app-text-accent)', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>

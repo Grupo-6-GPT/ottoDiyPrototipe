@@ -14,26 +14,58 @@ function extractVideoId(url: string): string | null {
 }
 
 async function obtenerDuracionVideo(videoId: string): Promise<number | null> {
+  // Strategy 1: scrape YouTube page with browser-like headers
+  const s1 = await scrapeYoutubePage(videoId);
+  if (s1 != null) return s1;
+
+  // Strategy 2: noembed.com public API (no auth needed, returns duration)
+  try {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(
+      `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`,
+      { signal: controller.signal, headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    clearTimeout(t);
+    if (res.ok) {
+      const data: { duration_seconds?: number; error?: string } = await res.json();
+      if (data.duration_seconds && !isNaN(data.duration_seconds)) {
+        return Math.round(data.duration_seconds);
+      }
+    }
+  } catch { /* fall through */ }
+
+  return null;
+}
+
+async function scrapeYoutubePage(videoId: string): Promise<number | null> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       signal: controller.signal,
-      headers: { 'Accept-Language': 'en-US,en;q=0.9' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Upgrade-Insecure-Requests': '1',
+      },
     });
     if (!response.ok) return null;
     const html = await response.text();
 
-    const playerMatch = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\})\s*;/);
-    if (playerMatch) {
-      try {
-        const data = JSON.parse(playerMatch[1]);
-        const seconds = parseInt(data?.videoDetails?.lengthSeconds, 10);
-        if (!isNaN(seconds)) return seconds;
-      } catch { /* fall through */ }
-    }
+    // Most reliable: direct grep for lengthSeconds field
+    const lenMatch = html.match(/"lengthSeconds"\s*:\s*"(\d+)"/);
+    if (lenMatch) return parseInt(lenMatch[1], 10);
 
-    const msMatch = html.match(/"approxDurationMs":"(\d+)"/);
+    // Fallback: approxDurationMs
+    const msMatch = html.match(/"approxDurationMs"\s*:\s*"(\d+)"/);
     if (msMatch) return Math.floor(parseInt(msMatch[1], 10) / 1000);
 
     return null;

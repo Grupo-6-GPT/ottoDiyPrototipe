@@ -38,6 +38,7 @@ export function PlayScreen() {
   const audioRef         = useRef<HTMLAudioElement | null>(null);
   const abortRef         = useRef<AbortController | null>(null);
   const elapsedTimer     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const songEndedRef     = useRef(false);
 
   const commands       = expandStepsToCommands(steps);
   const choreoDuration = commands.reduce((a, c) => a + c.durationMs, 0);
@@ -109,10 +110,12 @@ export function PlayScreen() {
     const startMs    = Date.now();
 
     // Temporizador de progreso — para automáticamente cuando acaba la canción
+    songEndedRef.current = false;
     elapsedTimer.current = setInterval(() => {
       const el = Date.now() - startMs;
       setElapsed(el);
       if (hasSong && el >= songDurationMs && !signal.aborted) {
+        songEndedRef.current = true;
         abortRef.current?.abort();
       }
     }, 200);
@@ -142,13 +145,19 @@ export function PlayScreen() {
 
     if (elapsedTimer.current) { clearInterval(elapsedTimer.current); elapsedTimer.current = null; }
 
-    if (!signal.aborted) {
+    const finishedNaturally = songEndedRef.current || !signal.aborted;
+    songEndedRef.current = false;
+
+    if (finishedNaturally) {
+      if (youtubePlayerRef.current) youtubePlayerRef.current.src = '';
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+      if (connected) sendCommand('FREEZE');
       setPlayState('finished');
       setCurrentStep(-1);
       setCurrentCmd(-1);
       toast('¡Baile completado! 🎉', { duration: 2500 });
     }
-  }, [steps, connected, commands, cmdToStepIndex, sendSequence, stopTimers,
+  }, [steps, connected, commands, cmdToStepIndex, sendSequence, stopTimers, sendCommand,
       meta.youtubeUrl, useAudioElement, hasSong, songDurationMs]);
 
   const stopDancing = useCallback(() => {
